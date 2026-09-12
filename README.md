@@ -2,6 +2,12 @@
 
 > **An interactive, crowdsourced D3.js web platform for visualizing and mapping global academic research collaborations.**
 
+🌍 **Live Website:** [https://researchgraph.pythonanywhere.com/](https://researchgraph.pythonanywhere.com/)
+
+<div align="center">
+  <img src="docs/rgraph-homepage.png" alt="ResearchGraph Homepage Screenshot" width="800"/>
+</div>
+
 ResearchGraph is a production-quality Flask web application designed for visualizing and collaboratively maintaining a global research collaboration network. Originally inspired by a personal portfolio visualization, this standalone platform provides researchers with permanent, shareable, interactive D3.js network graphs representing their academic collaborations, while allowing for a fully explorable Global Master Network.
 
 ## 🌟 Core Philosophy
@@ -102,7 +108,7 @@ flask run
 
 ---
 
-## 🌐 Deployment (Render / Production)
+## 🚀 Deployment (PythonAnywhere / Render / Production)
 
 1. Connect the repository to your Render Web Service.
 2. Set the build command: `pip install -r requirements.txt` (Ensure `gunicorn` and `psycopg2-binary` are uncommented).
