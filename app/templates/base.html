@@ -47,7 +47,7 @@
                 <div class="d-flex align-items-center">
                     {% if current_user.is_authenticated %}
                         <a href="{{ url_for('network.dashboard') }}" class="btn btn-outline-light btn-sm me-3">Dashboard</a>
-                        {% if current_user.has_role('ADMIN') or current_user.has_role('MODERATOR') %}
+                        {% if current_user.has_role('ADMIN') or current_user.has_role('MODERATOR') or current_user.has_role('SUPERADMIN') %}
                             <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm me-3">Admin</a>
                         {% endif %}
                         {% if current_user.researcher %}

@@ -123,6 +123,7 @@ def upgrade():
     sa.Column('reported_by_id', sa.Integer(), nullable=True),
     sa.Column('message', sa.Text(), nullable=False),
     sa.Column('status', sa.Enum('OPEN', 'UNDER_REVIEW', 'RESOLVED', 'REJECTED', name='reportstatus'), nullable=False),
+    sa.Column('is_deletion_request', sa.Boolean(), nullable=True, default=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
     sa.Column('updated_at', sa.DateTime(), nullable=True),
     sa.Column('resolved_by_id', sa.Integer(), nullable=True),
