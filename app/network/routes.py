@@ -11,8 +11,7 @@ from .forms import AddCollaborationForm, ReportCollaborationForm, ReportResearch
 @login_required
 def dashboard():
     if not current_user.researcher_id:
-        flash('Please search and claim your researcher profile first.', 'info')
-        return redirect(url_for('main.index'))
+        return redirect(url_for('main.welcome'))
         
     me = current_user.researcher
     # Get all collaborations where I am either A or B

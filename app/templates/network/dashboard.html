@@ -26,7 +26,11 @@
             <div class="card-body text-center">
                 <img src="{{ researcher.avatar(128) }}" class="rounded-circle mb-3 border border-3 border-light shadow" alt="Profile Picture" style="width: 120px; height: 120px; object-fit: cover;">
                 <h4 class="card-title academic-header fw-bold mb-1">{{ researcher.display_name }}</h4>
-                <p class="text-muted mb-4 small"><i class="bi bi-building me-1"></i>{{ researcher.affiliation or 'Independent Researcher' }}</p>
+                <p class="text-muted mb-2 small"><i class="bi bi-building me-1"></i>{{ researcher.affiliation or 'Independent Researcher' }}</p>
+                <div class="mb-4">
+                    <span class="badge bg-dark px-3 py-2 fs-6 rounded-pill shadow-sm" title="Your unique ResearchGraph identifier" data-bs-toggle="tooltip"><i class="bi bi-at text-info"></i>{{ researcher.slug }}</span>
+                    <p class="text-muted mt-2 mb-0 px-2" style="font-size: 0.75rem; line-height: 1.4;">This is your globally unique <strong>slug</strong>. It acts as your permanent username to securely generate links for your Public Profile and ResearchGraph.</p>
+                </div>
                 
                 <a href="{{ url_for('main.view_profile', slug=researcher.slug) }}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person-badge me-2"></i>View Public Profile</a>
                 <a href="{{ url_for('main.public_network', slug=researcher.slug) }}" class="btn btn-academic w-100 mb-2"><i class="bi bi-diagram-3-fill me-2"></i>View ResearchGraph</a>

@@ -282,6 +282,7 @@ def delete_researcher(uuid):
     collab_ids = [c.id for c in collabs]
     if collab_ids:
         CollaborationReport.query.filter(CollaborationReport.collaboration_id.in_(collab_ids)).delete(synchronize_session=False)
+        Collaboration.query.filter(Collaboration.id.in_(collab_ids)).delete(synchronize_session=False)
     
     ResearcherCorrectionReport.query.filter_by(researcher_id=uuid).delete(synchronize_session=False)
     
@@ -335,6 +336,7 @@ def resolve_researcher_report(report_id):
             collab_ids = [c.id for c in collabs]
             if collab_ids:
                 CollaborationReport.query.filter(CollaborationReport.collaboration_id.in_(collab_ids)).delete(synchronize_session=False)
+                Collaboration.query.filter(Collaboration.id.in_(collab_ids)).delete(synchronize_session=False)
             
             ResearcherCorrectionReport.query.filter(
                 ResearcherCorrectionReport.researcher_id == researcher.uuid,

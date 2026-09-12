@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block title %}Welcome to ResearchGraph{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center align-items-center" style="min-height: 70vh;">
+    <div class="col-lg-8">
+        <div class="card shadow-lg border-0 rounded-4 overflow-hidden">
+            <div class="card-header bg-dark text-white p-5 text-center">
+                <i class="bi bi-rocket-takeoff-fill display-1 text-primary mb-3"></i>
+                <h2 class="fw-bold academic-header mb-0">Welcome, Researcher!</h2>
+                <p class="text-white-50 mt-2 mb-0">Let's get your profile set up and mapped to the Global Graph.</p>
+            </div>
+            
+            <div class="card-body p-5">
+                <div class="alert alert-info border-0 shadow-sm rounded-3 p-4 mb-5">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-info-circle-fill me-2"></i>How to get started:</h5>
+                    <p class="mb-3">There is a very high chance that your profile is already curated in our database. To claim your identity:</p>
+                    <ol class="mb-0">
+                        <li class="mb-2"><strong>Search</strong> for your name or academic email using the bar below.</li>
+                        <li class="mb-2"><strong>Check the results</strong> and click "Claim This Profile" on your card.</li>
+                        <li class="mb-2">We will send a <strong>verification link</strong> to the email address on file.</li>
+                        <li>Once verified, you can immediately begin <strong>adding your collaborators</strong>!</li>
+                    </ol>
+                </div>
+                
+                <div class="bg-light p-4 rounded-4 shadow-sm border text-center mb-5">
+                    <h4 class="fw-bold mb-3 text-dark">Step 1: Find Your Profile</h4>
+                    <form method="GET" action="{{ url_for('main.search') }}" class="d-flex mx-auto" style="max-width: 500px;">
+                        <div class="input-group input-group-lg shadow-sm">
+                            <span class="input-group-text bg-white border-end-0 text-primary"><i class="bi bi-search"></i></span>
+                            {{ form.q(class="form-control border-start-0 ps-0", placeholder="Search your name or email...") }}
+                            <button class="btn btn-primary fw-bold px-4" type="submit">Search</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <hr class="my-5 text-muted">
+                
+                <div class="text-center">
+                    <h5 class="fw-bold text-secondary mb-3"><i class="bi bi-question-diamond-fill me-2"></i>Can't find yourself in the database?</h5>
+                    <p class="text-muted mb-0">That means our data team hasn't added you yet! Kindly contact our moderators and provide your details (Full Name, Institute Email, Affiliation, PhD Year/Institute, etc.) and we will manually curate your vertex into the network.</p>
+                    <a href="{{ url_for('main.team') }}" class="btn btn-outline-dark mt-4 rounded-pill fw-bold px-4"><i class="bi bi-people-fill me-2"></i>Meet the Team</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

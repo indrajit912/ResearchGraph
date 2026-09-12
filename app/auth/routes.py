@@ -41,7 +41,11 @@ def login():
                 return redirect(url_for('auth.login'))
             login_user(user)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('network.dashboard'))
+            if next_page:
+                return redirect(next_page)
+            if not user.researcher_id:
+                return redirect(url_for('main.welcome'))
+            return redirect(url_for('network.dashboard'))
         else:
             flash('Login Unsuccessful. Please check email and password', 'danger')
     return render_template('auth/login.html', form=form)
@@ -120,14 +124,30 @@ def claim_researcher(uuid):
         return redirect(url_for('main.index'))
         
     researcher = Researcher.query.get_or_404(uuid)
+    
+    # Check if this profile has already been claimed by another user
+    from app.models import User
+    existing_owner = User.query.filter_by(researcher_id=uuid).first()
+    if existing_owner:
+        flash('This profile has already been claimed! If you believe this is an error and you are the true owner, please contact the moderators.', 'danger')
+        return redirect(request.referrer or url_for('main.search'))
+        
     if not researcher.emails:
         flash("This profile doesn't have an email address on record. Please suggest a correction to add your email first.", "danger")
         return redirect(request.referrer or url_for('main.search'))
         
+    obfuscated_emails = []
     for email_record in researcher.emails:
         EmailService.send_claim_profile_email(email_record.email, researcher.uuid, current_user.id)
-        
-    flash(f"Verification sent! Please check the email(s) associated with {researcher.display_name}'s profile to confirm.", "info")
+        try:
+            prefix, domain = email_record.email.split('@')
+            obf_prefix = prefix[:2] + '****' if len(prefix) > 2 else prefix[0] + '****'
+            obfuscated_emails.append(f"{obf_prefix}@{domain}")
+        except:
+            pass
+            
+    emails_str = ", ".join(obfuscated_emails)
+    flash(f"Verification sent! Please check the following email(s) to confirm: {emails_str}", "info")
     return redirect(url_for('main.index'))
 
 @auth_bp.route('/verify-claim/<token>')

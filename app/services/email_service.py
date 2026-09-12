@@ -8,7 +8,19 @@ class EmailService:
     def send_claim_profile_email(cls, to_email, researcher_uuid, user_id):
         token = cls.generate_token({'r_uuid': researcher_uuid, 'u_id': user_id}, 'claim-salt')
         verify_url = url_for('auth.verify_claim', token=token, _external=True)
-        content = f"<h2 style='color:#002147;margin-top:0;'>Profile Claim Request</h2><p>Someone has requested to claim this ResearchGraph profile. If this was you, click here to verify: <a href='{verify_url}' style='display:inline-block;padding:10px 20px;background-color:#002147;color:#ffffff;text-decoration:none;border-radius:4px;font-weight:bold;margin:15px 0;'>Verify Claim</a></p><p style='color:#777;font-size:0.9em;'>This link securely expires in 1 hour.</p>"
+        content = f"""
+        <h2 style='color:#002147;margin-top:0;'>Action Required: Profile Claim Request</h2>
+        <p>Hello,</p>
+        <p>A user on <strong>ResearchGraph</strong> has just requested to claim the research profile associated with this email address.</p>
+        <p>If this was you, please click the secure button below to verify your identity and instantly take control of your interactive collaboration network:</p>
+        <p style='text-align:center;'>
+            <a href='{verify_url}' style='display:inline-block;padding:12px 24px;background-color:#002147;color:#ffffff;text-decoration:none;border-radius:6px;font-weight:bold;margin:20px 0;'>Verify & Claim Profile</a>
+        </p>
+        <p style='color:#dc3545;font-weight:bold;'>If you did NOT request this, please completely ignore this email.</p>
+        <p>No action will be taken on your profile, and the unauthorized claim request will automatically expire.</p>
+        <hr style='border:none;border-top:1px solid #eee;margin:20px 0;'/>
+        <p style='color:#777;font-size:0.85em;'>This verification link securely expires in 1 hour.</p>
+        """
         html = cls.get_html_template(content)
         text = f"Verify your profile claim here: {verify_url}"
         return cls.send_email(to_email, "ResearchGraph - Verify Profile Claim", html, text)

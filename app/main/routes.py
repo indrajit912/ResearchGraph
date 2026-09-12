@@ -65,3 +65,8 @@ def team():
 @main_bp.route('/global-network')
 def global_network():
     return render_template('global_network.html')
+
+@main_bp.route('/welcome')
+def welcome():
+    form = SearchForm()
+    return render_template('welcome.html', form=form)

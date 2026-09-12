@@ -50,8 +50,11 @@
                         {% if current_user.has_role('ADMIN') or current_user.has_role('MODERATOR') %}
                             <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm me-3">Admin</a>
                         {% endif %}
-                        {% set display_name = current_user.researcher.first_name if current_user.researcher else current_user.email.split('@')[0] %}
-                        <span class="text-white-50 small me-3" title="{{ current_user.email }}"><i class="bi bi-person-circle me-1"></i>{{ display_name }}</span>
+                        {% if current_user.researcher %}
+                            <span class="text-white small me-3 fw-bold font-monospace bg-dark px-2 py-1 rounded" title="{{ current_user.email }}"><i class="bi bi-at text-info"></i>{{ current_user.researcher.slug }}</span>
+                        {% else %}
+                            <span class="text-white-50 small me-3" title="{{ current_user.email }}"><i class="bi bi-person-circle me-1"></i>{{ current_user.email.split('@')[0].split('.')[0].capitalize() }}</span>
+                        {% endif %}
                         <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm">Logout</a>
                     {% else %}
                         <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
