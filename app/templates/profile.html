@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ researcher.display_name }} - ResearchGraph Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center py-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-5">
+                <div class="d-flex justify-content-between align-items-start mb-4">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ researcher.avatar(128) }}" class="rounded-circle me-4 border border-3 border-light shadow-sm" alt="Avatar">
+                        <div>
+                            <h1 class="fw-bold mb-1">{{ researcher.display_name }}</h1>
+
+                        <p class="text-muted fs-5 mb-0">{{ researcher.affiliation }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <a href="{{ url_for('main.public_network', slug=researcher.slug) }}" class="btn btn-primary"><i class="bi bi-diagram-3 me-2"></i>View ResearchGraph</a>
+                    </div>
+                </div>
+                
+                
+                <div class="alert alert-secondary border-0 bg-light small text-muted mb-4 d-flex align-items-center">
+                    <i class="bi bi-info-circle-fill text-secondary me-3 fs-4"></i>
+                    <div>
+                        <strong>Transparency Notice:</strong> This page only previews publicly available information retrieved from the internet (e.g., publications, arXiv, university directories). If you own this profile and wish to update or claim it, please log in.
+                    </div>
+                </div>
+
+                <h5 class="fw-bold border-bottom pb-2 mb-3">Professional Details</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">Department</small>
+                        <span>{{ researcher.department or 'N/A' }}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">PhD Institute & Year</small>
+                        <span>{{ researcher.phd_institute or 'N/A' }} {% if researcher.phd_year %}({{ researcher.phd_year }}){% endif %}</span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">Location</small>
+                        <span>
+                            {{ researcher.city or '' }} 
+                            {{ researcher.state or '' }} 
+                            {{ researcher.country or 'N/A' }}
+                        </span>
+                    </div>
+                </div>
+
+                <h5 class="fw-bold border-bottom pb-2 mb-3">Links & Identifiers</h5>
+                <div class="row mb-4">
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">Website</small>
+                        {% if researcher.website %}<a href="{{ researcher.website }}" target="_blank">{{ researcher.website }}</a>{% else %}N/A{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">ORCID</small>
+                        {% if researcher.orcid %}{{ researcher.orcid }}{% else %}N/A{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">arXiv ID</small>
+                        {% if researcher.arxiv_id %}{{ researcher.arxiv_id }}{% else %}N/A{% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">Google Scholar</small>
+                        {% if researcher.google_scholar_url %}<a href="{{ researcher.google_scholar_url }}" target="_blank">View Profile</a>{% else %}N/A{% endif %}
+                    </div>
+                </div>
+
+                <h5 class="fw-bold border-bottom pb-2 mb-3">Public Emails</h5>
+                <ul class="list-unstyled">
+                    {% for email in researcher.emails %}
+                    <li class="mb-2"><i class="bi bi-envelope text-info me-2"></i><a href="mailto:{{ email.email }}" class="text-decoration-none">{{ email.email }}</a> {% if email.is_primary %}<span class="badge bg-primary ms-2">Primary</span>{% endif %}</li>
+                    {% else %}
+                    <li class="text-muted">No public emails available.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,60 @@
+
+/* Custom Range Slider */
+.custom-range::-webkit-slider-thumb {
+    background: #3b82f6;
+}
+.custom-range::-webkit-slider-runnable-track {
+    background: #334155;
+}
+.legend-line {
+    width: 24px;
+    height: 3px;
+    border-radius: 2px;
+}
+.z-index-10 {
+    z-index: 10;
+}
+.transition-all {
+    transition: all 0.3s ease;
+}
+#d3-container {
+    cursor: grab;
+}
+#d3-container:active {
+    cursor: grabbing;
+}
+.link-established {
+    stroke: #3b82f6;
+    stroke-opacity: 0.7;
+    stroke-width: 2.5px;
+    transition: stroke-opacity 0.3s, stroke-width 0.3s;
+}
+.link-ongoing {
+    stroke: #f59e0b;
+    stroke-opacity: 0.8;
+    stroke-width: 2.5px;
+    stroke-dasharray: 6 6;
+    animation: dash 30s linear infinite;
+    transition: stroke-opacity 0.3s;
+}
+@keyframes dash {
+    to { stroke-dashoffset: -1000; }
+}
+.node-circle {
+    stroke: #1e293b;
+    stroke-width: 3px;
+    cursor: pointer;
+    transition: fill 0.3s, r 0.3s, filter 0.2s;
+    filter: drop-shadow(0px 0px 8px rgba(0,0,0,0.5));
+}
+.node-circle:hover {
+    filter: drop-shadow(0px 0px 12px rgba(255,255,255,0.4)) brightness(1.2);
+}
+.node-label {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    fill: #ffffff;
+    pointer-events: none;
+    text-shadow: none;
+}

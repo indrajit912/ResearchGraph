@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% block title %}Researcher Dashboard{% endblock %}
+{% block content %}
+<style>
+    .academic-header {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        color: #002147;
+    }
+    .academic-card {
+        border-top: 4px solid #002147;
+        background-color: #fafafa;
+    }
+    .btn-academic {
+        background-color: #002147;
+        color: white;
+    }
+    .btn-academic:hover {
+        background-color: #00152e;
+        color: white;
+    }
+</style>
+
+<div class="row mt-3">
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm academic-card">
+            <div class="card-body text-center">
+                <img src="{{ researcher.avatar(128) }}" class="rounded-circle mb-3 border border-3 border-light shadow" alt="Profile Picture" style="width: 120px; height: 120px; object-fit: cover;">
+                <h4 class="card-title academic-header fw-bold mb-1">{{ researcher.display_name }}</h4>
+                <p class="text-muted mb-4 small"><i class="bi bi-building me-1"></i>{{ researcher.affiliation or 'Independent Researcher' }}</p>
+                
+                <a href="{{ url_for('main.view_profile', slug=researcher.slug) }}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person-badge me-2"></i>View Public Profile</a>
+                <a href="{{ url_for('main.public_network', slug=researcher.slug) }}" class="btn btn-academic w-100 mb-2"><i class="bi bi-diagram-3-fill me-2"></i>View ResearchGraph</a>
+                <a href="#" class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#reportResearcherModal"><i class="bi bi-pencil-square me-2"></i>Suggest Correction</a>
+                
+                <div class="mt-4 pt-3 border-top text-start">
+                    <p class="small text-muted mb-1 fw-bold"><i class="bi bi-link-45deg me-1"></i>Permanent Embed URL</p>
+                    <p class="small text-muted mb-2" style="font-size: 0.8rem;">Share this link in your publications or embed it on your personal website to show your interactive graph.</p>
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control text-primary bg-white" value="{{ url_for('main.public_network', slug=researcher.slug, _external=True) }}" readonly id="publicUrlInput">
+                        <button class="btn btn-outline-primary" type="button" onclick="copyText(document.getElementById('publicUrlInput').value, this)"><i class="bi bi-clipboard me-1"></i>Copy</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm border-0 bg-light">
+            <div class="card-body">
+                <h6 class="card-title academic-header fw-bold border-bottom pb-2 mb-3"><i class="bi bi-search me-2"></i>Find Collaborators</h6>
+                <p class="small text-muted mb-3">Search the global directory to establish a connection.</p>
+                <form action="{{ url_for('main.search') }}" method="GET">
+                    <div class="input-group">
+                        <input type="text" name="q" class="form-control bg-white" placeholder="Name, institution, or email..." required>
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2 mt-2">
+            <h3 class="academic-header fw-bold mb-0"><i class="bi bi-journal-text me-2"></i>Collaboration Graph</h3>
+            <span class="badge bg-secondary fs-6">{{ collaborations|length }} connections</span>
+        </div>
+        
+        <p class="text-muted mb-4">Manage your direct collaborations in the global ResearchGraph directory.</p>
+        
+        {% if collaborations %}
+        <div class="list-group shadow-sm">
+            {% for c in collaborations %}
+                {% set other = c.researcher_b if c.researcher_a_id == researcher.uuid else c.researcher_a %}
+                <div class="list-group-item d-flex justify-content-between align-items-center p-3">
+                    <div class="d-flex align-items-center">
+                        <img src="{{ other.avatar(48) }}" class="rounded-circle me-3 border" width="48" height="48" alt="Avatar">
+                        <div>
+                            <h6 class="mb-0 fw-bold academic-header"><a href="{{ url_for('main.view_profile', slug=other.slug) }}" class="text-decoration-none text-dark">{{ other.display_name }}</a></h6>
+                            <small class="text-muted">{{ other.affiliation or 'No affiliation' }}</small>
+                            <span class="badge bg-{{ 'success' if c.status.name == 'ESTABLISHED' else 'warning text-dark' }} ms-2" style="font-size: 0.7rem;">{{ c.status.name }}</span>
+                        </div>
+                    </div>
+                    <div>
+                        
+                        <form method="POST" action="{{ url_for('network.remove_edge', collab_id=c.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this collaboration from the global graph?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Directly remove this collaboration from the graph"><i class="bi bi-trash"></i></button>
+                        </form>
+                        <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#reportCollabModal" data-collab-id="{{ c.id }}" data-other-name="{{ other.display_name }}" data-bs-toggle="tooltip" data-bs-placement="top" title="Flag as incorrect to notify moderators"><i class="bi bi-flag"></i></button>
+
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-light border shadow-sm p-4 text-center">
+            <i class="bi bi-diagram-2 text-muted fs-1 d-block mb-3"></i>
+            <h5 class="academic-header">No collaborations mapped yet</h5>
+            <p class="text-muted mb-0">Use the search panel to find your peers and build your global network.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Modal for Reporting Collaboration -->
+<div class="modal fade" id="reportCollabModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('network.report_collaboration') }}">
+          <div class="modal-header">
+            <h5 class="modal-title academic-header">Report Incorrect Collaboration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="collaboration_id" id="modalCollabId">
+            <p>You are reporting your collaboration with <strong id="modalCollabName"></strong> as incorrect.</p>
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold text-uppercase">Reason for correction</label>
+                <textarea name="message" class="form-control bg-light" rows="3" required placeholder="Briefly explain what needs to be fixed..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="submit" class="btn btn-danger">Submit Report</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for Reporting Researcher Correction -->
+<div class="modal fade" id="reportResearcherModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form method="POST" action="{{ url_for('network.report_researcher') }}">
+          <div class="modal-header">
+            <h5 class="modal-title academic-header">Suggest Profile Correction</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="researcher_uuid" value="{{ researcher.uuid }}">
+            <p>Suggest a correction for <strong>{{ researcher.display_name }}</strong>'s public data.</p>
+            <div class="mb-3">
+                <label class="form-label text-muted small fw-bold text-uppercase">Proposed Changes</label>
+                <textarea name="message" class="form-control bg-light" rows="3" required placeholder="List the missing or incorrect information..."></textarea>
+            </div>
+          </div>
+          <div class="modal-footer border-0">
+            <button type="submit" class="btn btn-academic">Submit Suggestion</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+      return new bootstrap.Tooltip(tooltipTriggerEl)
+    });
+
+    var reportCollabModal = document.getElementById('reportCollabModal');
+    if(reportCollabModal) {
+        reportCollabModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var collabId = button.getAttribute('data-collab-id');
+            var otherName = button.getAttribute('data-other-name');
+            
+            document.getElementById('modalCollabId').value = collabId;
+            document.getElementById('modalCollabName').textContent = otherName;
+        });
+    }
+});
+</script>
+{% endblock %}

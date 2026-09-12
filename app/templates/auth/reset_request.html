@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Reset Password - ResearchGraph{% endblock %}
+{% block content %}
+<style>
+    .auth-wrapper {
+        min-height: 75vh;
+        background-image: radial-gradient(rgba(0, 33, 71, 0.05) 1px, transparent 1px);
+        background-size: 20px 20px;
+        display: flex;
+        align-items: center;
+    }
+    .academic-header {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        color: #002147;
+    }
+    .auth-card {
+        border: none;
+        border-top: 5px solid #ffc107; /* Warning yellow for reset */
+        border-radius: 12px;
+        background-color: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+    }
+    .btn-academic {
+        background-color: #002147;
+        color: white;
+        transition: all 0.2s ease;
+    }
+    .btn-academic:hover {
+        background-color: #00152e;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(0,33,71,0.2);
+    }
+    .form-control:focus {
+        border-color: #ffc107;
+        box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.15);
+    }
+</style>
+
+<div class="auth-wrapper py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-5">
+                <div class="card auth-card shadow-lg p-4">
+                    <div class="card-body">
+                        <div class="text-center mb-4">
+                            <div class="d-inline-block bg-light rounded-circle p-3 mb-3 shadow-sm">
+                                <i class="bi bi-key-fill text-warning" style="font-size: 2rem;"></i>
+                            </div>
+                            <h2 class="academic-header fw-bold">Reset Password</h2>
+                            <p class="text-muted small">Enter your email address and we will send you a link to reset your password.</p>
+                        </div>
+                        
+                        <form method="POST" action="">
+                            {{ form.hidden_tag() }}
+                            <div class="mb-4">
+                                <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-envelope me-1"></i> {{ form.email.label.text }}</label>
+                                {{ form.email(class="form-control form-control-lg bg-light", placeholder="Enter your email") }}
+                                {% for error in form.email.errors %}<div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>{% endfor %}
+                            </div>
+                            <div class="d-grid mb-4">
+                                {{ form.submit(class="btn btn-warning btn-lg fw-bold text-dark") }}
+                            </div>
+                        </form>
+                        
+                        <div class="text-center mt-3 pt-3 border-top">
+                            <p class="text-muted small mb-0">Remembered your password? <a href="{{ url_for('auth.login') }}" class="fw-bold text-decoration-none text-primary">Login here</a></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

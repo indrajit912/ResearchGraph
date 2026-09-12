@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Global Network - ResearchGraph{% endblock %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/research_graph.css') }}">
+<style>
+    .graph-wrapper {
+        height: 85vh; 
+        background: #00122e; /* Deep Oxford Blue Variant */
+        background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+        background-size: 30px 30px;
+    }
+    @media (max-width: 768px) {
+        .graph-wrapper { height: auto; min-height: 85vh; display: flex; flex-direction: column; }
+        .control-panel { position: relative !important; width: 100% !important; border-radius: 0 !important; margin: 0 !important; }
+        #d3-container { flex-grow: 1; min-height: 60vh; }
+    }
+    /* Hide the depth slider for the global graph since it loads everything */
+    .depth-control-wrapper { display: none; }
+</style>
+<div class="graph-wrapper shadow-lg rounded-4 overflow-hidden position-relative">
+    
+    <!-- Controls Overlay -->
+    <div class="position-absolute top-0 start-0 m-4 z-index-10 control-panel text-white p-4 rounded-4 shadow-lg" style="background: rgba(10, 20, 40, 0.90); backdrop-filter: blur(12px); width: 340px; border: 1px solid rgba(255,255,255,0.15);">
+        <h2 class="fw-bold mb-1 font-monospace text-primary">ResearchGraph</h2>
+        <p class="text-info mb-3 small"><i class="bi bi-globe me-1"></i>Global Master Network</p>
+        
+        <div class="mb-4 pb-3 border-bottom border-secondary border-opacity-50">
+            <div class="d-flex justify-content-between align-items-center mb-3 px-2">
+                <span class="text-white-50 small text-uppercase fw-bold"><i class="bi bi-people me-1"></i>Total Vertices</span>
+                <h4 class="mb-0 fw-bold text-info font-monospace" id="stat-vertices">0</h4>
+            </div>
+            
+            <div class="text-white-50 small text-uppercase fw-bold mb-2 px-2"><i class="bi bi-diagram-3 me-1"></i>Total Edges</div>
+            <div class="d-flex justify-content-between text-center bg-dark bg-opacity-25 border border-secondary border-opacity-25 rounded-3 p-2">
+                <div class="px-2 border-end border-secondary border-opacity-25">
+                    <h5 class="mb-0 fw-bold text-white font-monospace" id="stat-total">0</h5>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">ALL</small>
+                </div>
+                <div class="px-2 border-end border-secondary border-opacity-25">
+                    <h5 class="mb-0 fw-bold text-primary font-monospace" id="stat-est">0</h5>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">ESTABLISHED</small>
+                </div>
+                <div class="px-2">
+                    <h5 class="mb-0 fw-bold text-warning font-monospace" id="stat-ong">0</h5>
+                    <small class="text-white-50" style="font-size: 0.65rem; letter-spacing: 0.5px;">ONGOING</small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dummy depth control so the JS doesn't break, hidden via CSS -->
+        <div class="depth-control-wrapper">
+            <input type="range" class="form-range" id="depthControl" value="1">
+            <span id="depthLabel">1</span>
+        </div>
+        
+        <div class="legend small">
+            <p class="text-white-50 fst-italic mb-3">This visualization represents the entire curated public database.</p>
+            <div class="d-flex align-items-center mb-2">
+                <div class="legend-line me-2" style="background: #3b82f6;"></div>
+                <span class="text-light">Established Collaboration</span>
+            </div>
+            <div class="d-flex align-items-center mb-2">
+                <div class="legend-line dashed me-2" style="background: repeating-linear-gradient(90deg, #f59e0b, #f59e0b 4px, transparent 4px, transparent 8px);"></div>
+                <span class="text-light">Ongoing Collaboration</span>
+            </div>
+            <div class="d-flex align-items-center mt-3 pt-3 border-top border-secondary border-opacity-50">
+                <button class="btn btn-sm btn-outline-light w-100" onclick="copyText(window.location.href, this)"><i class="bi bi-share me-1"></i>Share Global Map</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- D3 Container (Points to global API) -->
+    <div id="d3-container" class="w-100 h-100" data-api-url="{{ url_for('api.get_global_network') }}"></div>
+    
+    <!-- Floating Node Info Card (Hidden by default) -->
+    <div id="node-info-card" class="position-absolute shadow-lg rounded-3 p-3 d-none transition-all" style="background: rgba(30, 40, 60, 0.95); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.1); width: 220px;">
+        <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-2" aria-label="Close" onclick="closeNodeInfo()"></button>
+        <h6 id="node-name" class="text-white fw-bold mb-1 pe-3">Name</h6>
+        <p id="node-affil" class="text-muted small mb-3">Affiliation</p>
+        <div class="d-flex gap-2">
+            <a id="node-profile-link" href="#" class="btn btn-sm btn-outline-light w-100">View Profile</a>
+            <a id="node-network-link" href="#" class="btn btn-sm btn-primary w-100">ResearchGraph</a>
+        </div>
+    </div>
+
+</div>
+
+<!-- Load D3.js -->
+<script src="https://d3js.org/d3.v7.min.js"></script>
+<script src="{{ url_for('static', filename='js/research_graph.js') }}"></script>
+{% endblock %}

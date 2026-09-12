@@ -1,0 +1,22 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<h3>Manage Roles for: {{ target_user.email }}</h3>
+<div class="card mt-4">
+    <div class="card-body">
+        <form method="POST">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            {% for r in all_roles %}
+                {% set has_role = r in target_user.roles %}
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="checkbox" name="roles" value="{{ r.name }}" id="role_{{ r.id }}" {% if has_role %}checked{% endif %}>
+                    <label class="form-check-label" for="role_{{ r.id }}">
+                        <strong>{{ r.name }}</strong>
+                    </label>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success mt-3">Save Roles</button>
+            <a href="{{ url_for('admin.list_users') }}" class="btn btn-secondary mt-3 ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

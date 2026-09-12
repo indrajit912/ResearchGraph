@@ -1,0 +1,28 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<h3>Recent Audit Logs</h3>
+<table class="table table-sm table-striped mt-3" style="font-size: 0.9rem;">
+    <thead>
+        <tr>
+            <th>Timestamp (UTC)</th>
+            <th>User ID</th>
+            <th>Action</th>
+            <th>Object</th>
+            <th>Values</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for log in logs %}
+        <tr>
+            <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ log.user_id or 'System' }}</td>
+            <td><span class="badge bg-primary">{{ log.action }}</span></td>
+            <td>{{ log.object_type }}:{{ log.object_id }}</td>
+            <td class="text-muted text-break" style="max-width: 250px;">{{ log.new_value }}</td>
+        </tr>
+        {% else %}
+        <tr><td colspan="5">No audit logs found.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

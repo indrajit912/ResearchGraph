@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-3">
+        <div class="list-group shadow-sm mb-4">
+            <a href="{{ url_for('admin.dashboard') }}" class="list-group-item list-group-item-action fw-bold text-dark bg-light"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
+            {% if current_user.has_role('ADMIN') or current_user.has_role('MODERATOR') or current_user.has_role('SUPERADMIN') %}
+            <a href="{{ url_for('admin.list_researchers') }}" class="list-group-item list-group-item-action"><i class="bi bi-people me-2"></i> Researchers</a>
+            <a href="{{ url_for('admin.create_edge') }}" class="list-group-item list-group-item-action"><i class="bi bi-diagram-3 me-2"></i> Draw Edges</a>
+            <a href="{{ url_for('admin.moderation_dashboard') }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                <span><i class="bi bi-shield-exclamation me-2"></i> Moderation</span>
+                {% if open_reports_count > 0 %}
+                <span class="badge bg-danger rounded-pill">{{ open_reports_count }}</span>
+                {% endif %}
+            </a>
+            {% endif %}
+            
+            {% if current_user.has_role('ADMIN') or current_user.has_role('SUPERADMIN') %}
+            <a href="{{ url_for('admin.list_users') }}" class="list-group-item list-group-item-action"><i class="bi bi-person-badge me-2"></i> Users & Roles</a>
+            <a href="{{ url_for('admin.audit_logs') }}" class="list-group-item list-group-item-action"><i class="bi bi-journal-text me-2"></i> Audit Logs</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-md-9">
+        {% block admin_content %}{% endblock %}
+    </div>
+</div>
+{% endblock %}

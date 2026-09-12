@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}ResearchGraph - Global Collaboration Network{% endblock %}</title>
+    
+    <!-- SEO and Open Graph Metadata -->
+    <meta name="description" content="{% block meta_description %}Explore and build a global graph of research collaborations. Join ResearchGraph to map your academic network.{% endblock %}">
+    <meta property="og:title" content="ResearchGraph">
+    <meta property="og:description" content="Map your academic connections on the global research collaboration graph.">
+    <meta property="og:type" content="website">
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    
+    <style>
+        body { display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex: 1; }
+        .footer { background-color: #f8f9fa; border-top: 1px solid #e9ecef; }
+    </style>
+    {% block head %}{% endblock %}
+</head>
+<body class="bg-light">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+                <i class="bi bi-diagram-3-fill text-primary me-2"></i>ResearchGraph
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.global_network') }}"><i class="bi bi-globe me-1"></i>Global Graph</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.about') }}">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.team') }}">Team</a>
+                    </li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    {% if current_user.is_authenticated %}
+                        <a href="{{ url_for('network.dashboard') }}" class="btn btn-outline-light btn-sm me-3">Dashboard</a>
+                        {% if current_user.has_role('ADMIN') or current_user.has_role('MODERATOR') %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-warning btn-sm me-3">Admin</a>
+                        {% endif %}
+                        {% set display_name = current_user.researcher.first_name if current_user.researcher else current_user.email.split('@')[0] %}
+                        <span class="text-white-50 small me-3" title="{{ current_user.email }}"><i class="bi bi-person-circle me-1"></i>{{ display_name }}</span>
+                        <a href="{{ url_for('auth.logout') }}" class="btn btn-secondary btn-sm">Logout</a>
+                    {% else %}
+                        <a href="{{ url_for('auth.login') }}" class="btn btn-outline-light btn-sm me-2">Login</a>
+                        <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-sm">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer py-4 mt-auto">
+        <div class="container text-center text-muted small">
+            <p class="mb-1">&copy; 2026 <a href="https://indrajitghosh.onrender.com" target="_blank" class="text-decoration-none text-primary fw-semibold">Indrajit Ghosh</a>. All rights reserved.</p>
+            <p class="mb-0">Curate the people, crowdsource the connections.</p>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+    function copyText(text, buttonElement) {
+        const originalText = buttonElement.getAttribute('data-original-text') || buttonElement.innerText;
+        buttonElement.setAttribute('data-original-text', originalText);
+        
+        if (!navigator.clipboard) {
+            // Fallback for non-HTTPS environments like local IP (192.168.x.x)
+            var textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.position = "fixed";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                buttonElement.innerText = 'Copied!';
+            } catch (err) {
+                buttonElement.innerText = 'Failed';
+            }
+            document.body.removeChild(textArea);
+            setTimeout(() => { buttonElement.innerText = originalText; }, 2000);
+            return;
+        }
+        
+        navigator.clipboard.writeText(text).then(function() {
+            buttonElement.innerText = 'Copied!';
+            setTimeout(() => { buttonElement.innerText = originalText; }, 2000);
+        }).catch(function(err) {
+            buttonElement.innerText = 'Failed';
+        });
+    }
+    </script>
+</body>
+</html>

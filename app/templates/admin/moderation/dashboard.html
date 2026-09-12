@@ -1,0 +1,87 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<h3 class="mb-4">Moderation Dashboard</h3>
+
+<h4>Collaboration Reports</h4>
+{% if collab_reports %}
+    <div class="list-group mb-4">
+    {% for report in collab_reports %}
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h6 class="mb-1">Edge: <a href="{{ url_for('admin.view_researcher', uuid=report.collaboration.researcher_a_id) }}">{{ report.collaboration.researcher_a.display_name }}</a> <-> <a href="{{ url_for('admin.view_researcher', uuid=report.collaboration.researcher_b_id) }}">{{ report.collaboration.researcher_b.display_name }}</a></h6>
+                <small class="text-danger fw-bold">OPEN</small>
+            </div>
+            <p class="mb-1 text-muted">"{{ report.message }}"</p>
+            <small>Reported by User #{{ report.reported_by_id }}</small>
+            
+            <form method="POST" action="{{ url_for('admin.resolve_collab_report', report_id=report.id) }}" class="mt-3 bg-light p-3 border rounded">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <div class="mb-2">
+                    <label class="form-label small fw-bold">Resolution Notes</label>
+                    <input type="text" name="resolution_message" class="form-control form-control-sm" placeholder="e.g. Edge removed, data was incorrect." required>
+                </div>
+                <button type="submit" name="action" value="RESOLVED" class="btn btn-sm btn-success">Mark Resolved (Fix applied)</button>
+                <button type="submit" name="action" value="REJECTED" class="btn btn-sm btn-secondary">Reject Report (No fix needed)</button>
+                <small class="text-muted d-block mt-2">Note: You must manually fix/delete the collaboration if it is incorrect before resolving.</small>
+            </form>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-success">No open collaboration reports.</div>
+{% endif %}
+
+{% if current_user.has_role('ADMIN') or current_user.has_role('SUPERADMIN') %}
+<h4 class="mt-5">Vertex (Researcher) Reports</h4>
+{% if researcher_reports %}
+    <div class="list-group mb-4">
+    {% for report in researcher_reports %}
+        {% if not report.is_deletion_request or current_user.has_role('ADMIN') or current_user.has_role('SUPERADMIN') %}
+        <div class="list-group-item {% if report.is_deletion_request %}border-danger border-2{% endif %}">
+            <div class="d-flex w-100 justify-content-between align-items-center">
+                <h6 class="mb-1">Vertex: 
+                    {% if report.researcher %}
+                        <a href="{{ url_for('admin.view_researcher', uuid=report.researcher_id) }}">{{ report.researcher.display_name }}</a>
+                    {% else %}
+                        <span class="text-muted">Deleted Vertex</span>
+                    {% endif %}
+                </h6>
+                <div>
+                    {% if report.is_deletion_request %}
+                        <span class="badge bg-danger">DELETION REQUEST</span>
+                    {% endif %}
+                    <small class="text-danger fw-bold ms-2">OPEN</small>
+                </div>
+            </div>
+            <p class="mb-1 text-muted mt-2 p-2 bg-light rounded">"{{ report.message }}"</p>
+            <small class="text-muted">Requested by User #{{ report.reported_by_id }}</small>
+            
+            <form method="POST" action="{{ url_for('admin.resolve_researcher_report', report_id=report.id) }}" class="mt-3 bg-light p-3 border rounded">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                
+                {% if report.is_deletion_request and (current_user.has_role('ADMIN') or current_user.has_role('SUPERADMIN')) %}
+                    <div class="alert alert-danger py-2 mb-2 d-flex align-items-center">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                        <span><strong>Admin Action Required:</strong> Approving this will permanently delete the vertex and all connected edges.</span>
+                    </div>
+                    <button type="submit" name="action" value="APPROVE_DELETION" class="btn btn-sm btn-danger fw-bold me-2">Approve Deletion (Delete Vertex)</button>
+                    <button type="submit" name="action" value="REJECTED" class="btn btn-sm btn-secondary">Reject Request</button>
+                {% else %}
+                    <div class="mb-2">
+                        <label class="form-label small fw-bold">Resolution Notes</label>
+                        <input type="text" name="resolution_message" class="form-control form-control-sm" placeholder="e.g. Verified and corrected." {% if not report.is_deletion_request %}required{% endif %}>
+                    </div>
+                    <button type="submit" name="action" value="RESOLVED" class="btn btn-sm btn-success">Mark Resolved</button>
+                    <button type="submit" name="action" value="REJECTED" class="btn btn-sm btn-secondary">Reject Report</button>
+                {% endif %}
+            </form>
+        </div>
+        {% endif %}
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-success">No open vertex reports.</div>
+{% endif %}
+
+{% endif %}
+{% endblock %}

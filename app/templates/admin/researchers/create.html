@@ -1,0 +1,123 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+    <h2 class="fw-bold text-dark"><i class="bi bi-person-plus text-primary me-2"></i>Add Researcher</h2>
+    <a href="{{ url_for('admin.list_researchers') }}" class="btn btn-outline-secondary btn-sm"><i class="bi bi-arrow-left me-1"></i>Back to List</a>
+</div>
+
+<!-- Moderation Guidelines -->
+<div class="alert alert-info border border-info shadow-sm rounded-4 mb-4" role="alert">
+    <h5 class="alert-heading fw-bold"><i class="bi bi-shield-check me-2"></i>Data Entry Guidelines</h5>
+    <p class="mb-2 text-dark">As a moderator, you are responsible for maintaining the accuracy and privacy of the ResearchGraph database.</p>
+    <ul class="mb-0 text-dark">
+        <li><strong>Public Data Only:</strong> Do NOT add any private information. Only input data that is already publicly available on the internet.</li>
+        <li><strong>Best Practices:</strong> The safest source of truth is <a href="https://arxiv.org/" target="_blank" class="fw-bold text-decoration-none">arXiv.org</a>. Check their latest pre-prints to verify their current affiliations and institutional email addresses.</li>
+        <li><strong>Affiliations Change:</strong> Researchers frequently move between departments or universities. Double check before assigning an affiliation.</li>
+        <li><strong>PhD Details:</strong> For accurate PhD Institutes and graduation years, you may consult the <a href="https://genealogy.math.ndsu.nodak.edu/" target="_blank" class="fw-bold text-decoration-none">Mathematics Genealogy Project</a>.</li>
+    </ul>
+</div>
+
+<div class="card shadow-sm border-0 rounded-4">
+    <div class="card-body p-4">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            
+            <h5 class="fw-bold text-primary mb-3">Basic Information</h5>
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.first_name.label.text }}</label>
+                    {{ form.first_name(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.middle_name.label.text }}</label>
+                    {{ form.middle_name(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.last_name.label.text }}</label>
+                    {{ form.last_name(class="form-control bg-light") }}
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-envelope me-1"></i> {{ form.emails.label.text }}</label>
+                    {{ form.emails(class="form-control bg-light", placeholder="e.g. primary@univ.edu, secondary@gmail.com") }}
+                    <small class="text-muted d-block mt-1">Enter a comma-separated list of emails. The first email will be automatically assigned as their primary institutional email (used for Gravatar and Profile Claiming).</small>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-primary mb-3 border-top pt-3">Academic Affiliation</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-building me-1"></i> {{ form.affiliation.label.text }}</label>
+                    {{ form.affiliation(class="form-control bg-light", placeholder="e.g. Stanford University") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.department.label.text }}</label>
+                    {{ form.department(class="form-control bg-light", placeholder="e.g. Department of Mathematics") }}
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-mortarboard me-1"></i> {{ form.phd_institute.label.text }}</label>
+                    {{ form.phd_institute(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-calendar3 me-1"></i> {{ form.phd_year.label.text }}</label>
+                    {{ form.phd_year(class="form-control bg-light") }}
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-primary mb-3 border-top pt-3">Public Profiles & Links</h5>
+            <div class="row mb-4">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-globe me-1"></i> {{ form.website.label.text }}</label>
+                    {{ form.website(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.orcid.label.text }}</label>
+                    {{ form.orcid(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.arxiv_id.label.text }}</label>
+                    {{ form.arxiv_id(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.google_scholar_url.label.text }}</label>
+                    {{ form.google_scholar_url(class="form-control bg-light") }}
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-primary mb-3 border-top pt-3">Location Details (Optional)</h5>
+            <div class="row mb-4">
+                <div class="col-md-12 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-geo-alt me-1"></i> {{ form.address.label.text }}</label>
+                    {{ form.address(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.city.label.text }}</label>
+                    {{ form.city(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.state.label.text }}</label>
+                    {{ form.state(class="form-control bg-light") }}
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.country.label.text }}</label>
+                    {{ form.country(class="form-control bg-light") }}
+                </div>
+            </div>
+
+            <div class="mb-4 form-check bg-light p-3 rounded-3 border">
+                {{ form.is_active(class="form-check-input ms-1") }} 
+                <label class="form-check-label fw-bold ms-2">{{ form.is_active.label.text }} (Show in search results)</label>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                {{ form.submit(class="btn btn-primary btn-lg fw-bold px-5") }}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

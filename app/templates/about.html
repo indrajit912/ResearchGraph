@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}About - ResearchGraph{% endblock %}
+{% block content %}
+<div class="row justify-content-center py-5">
+    <div class="col-lg-8">
+        <h1 class="fw-bold mb-4">The Story Behind ResearchGraph</h1>
+        
+        <div class="prose fs-5 text-secondary" style="line-height: 1.8;">
+            <div class="alert alert-info shadow-sm border-info rounded-4 mb-5" role="alert">
+                <h5 class="alert-heading fw-bold"><i class="bi bi-shield-check text-primary me-2"></i>Commitment to Public Data</h5>
+                <p class="mb-0 fs-6 text-dark">ResearchGraph is built <strong>exclusively on publicly verifiable information</strong>. The vertices and edges in our network represent data aggregated from public academic records, pre-prints (such as <a href="https://arxiv.org/" class="fw-bold text-decoration-none">arXiv</a>), and public institutional directories. We strictly prohibit the submission or storage of any private, confidential, or unlisted information.</p>
+            </div>
+            
+            <p>Around September 2026, I created a collaboration network feature for my personal website (<a href="https://indrajitghosh.onrender.com/network/" target="_blank" class="text-decoration-none text-primary fw-semibold">see it here</a>). The goal was simple: to display my research collaborators through a visually appealing, interactive force-directed graph.</p>
+            
+            <p>After sharing the feature with my colleagues and collaborators, I realized that many other researchers also wanted a similar network on their own academic pages.</p>
+            
+            <div class="p-4 bg-light rounded-4 border my-4 text-dark">
+                <h5 class="fw-bold mb-3"><i class="bi bi-lightbulb text-warning me-2"></i> The Problem</h5>
+                <p class="mb-0 fs-6">Many brilliant researchers are not programmers. They do not maintain web applications, they do not want to manage databases, they have no time to configure complex D3.js graph visualization libraries, and they certainly do not want to deploy and host their own web infrastructure just to show a network graph.</p>
+            </div>
+            
+            <p>Therefore, I decided to create <strong>ResearchGraph</strong> &mdash; a standalone service that provides researchers with a permanent URL to their interactive collaboration network.</p>
+            
+            <h3 class="fw-bold text-dark mt-5 mb-3">How It Works</h3>
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">1</div>
+                </div>
+                <div><strong>Register</strong> an account and verify your email.</div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">2</div>
+                </div>
+                <div><strong>Find yourself</strong> in the master database and claim your profile.</div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">3</div>
+                </div>
+                <div><strong>Crowdsource connections</strong> by adding missing colleagues to the global graph.</div>
+            </div>
+            <div class="d-flex mb-4">
+                <div class="me-3">
+                    <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 30px; height: 30px;">4</div>
+                </div>
+                <div><strong>Share</strong> your permanent <code>/r/your-name</code> link on your personal website.</div>
+            </div>
+            
+            <hr class="my-5">
+            
+            <p>To prevent chaos, the database of researchers (the vertices) is strictly curated by moderators. However, the collaborations (the edges) are openly crowdsourced by the community.</p>
+            
+            <div class="mt-5 pt-5 border-top">
+                <div class="d-flex align-items-center bg-white p-4 rounded-4 shadow-sm border">
+                    <img src="https://gravatar.com/avatar/8036c68d9dbabdde5e8fe86e1c80634f9a158d4ed100a3eff84f08abdd8b245b?d=identicon&s=80" alt="Indrajit Ghosh" class="rounded-circle me-4 border border-2 border-primary shadow-sm" width="80" height="80">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-1" style="font-family: 'Georgia', serif;">Indrajit Ghosh</h5>
+                        <p class="mb-2 fs-6 text-muted">Founder & Developer, ResearchGraph<br><small>Postdoc Researcher in Mathematics</small></p>
+                        <a href="https://indrajitghosh.onrender.com" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-globe me-1"></i>Visit Personal Website</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

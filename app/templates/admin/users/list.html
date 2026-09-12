@@ -1,0 +1,28 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<h3>User Management</h3>
+<table class="table table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>Roles</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.email }}</td>
+            <td>
+                {% for r in u.roles %}
+                <span class="badge bg-secondary">{{ r.name }}</span>
+                {% endfor %}
+            </td>
+            <td>
+                <a href="{{ url_for('admin.manage_roles', uuid=u.uuid) }}" class="btn btn-sm btn-primary">Manage Roles</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

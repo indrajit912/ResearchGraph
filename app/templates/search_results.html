@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% block title %}Search Results - ResearchGraph{% endblock %}
+{% block content %}
+<style>
+    .academic-header {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        color: #002147;
+    }
+    .search-header {
+        background-image: radial-gradient(rgba(0, 33, 71, 0.05) 1px, transparent 1px);
+        background-size: 20px 20px;
+        border-radius: 12px;
+    }
+    .result-card {
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border: none;
+        border-left: 5px solid #002147;
+    }
+    .result-card:hover {
+        transform: translateX(4px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.08) !important;
+    }
+</style>
+
+<div class="search-header p-5 text-center mb-5 border shadow-sm bg-white">
+    <h2 class="academic-header fw-bold mb-3"><i class="bi bi-search text-primary me-2"></i>Search Database</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <form method="GET" action="{{ url_for('main.search') }}" class="d-flex shadow-sm rounded-pill overflow-hidden border">
+                <input type="text" name="q" class="form-control form-control-lg border-0 px-4 shadow-none" value="{{ q }}" placeholder="Search by name or email..." required>
+                <button class="btn btn-primary px-4 fw-bold" type="submit">Search</button>
+            </form>
+            <p class="text-muted small mt-3 mb-0">{% if q %}Showing results for "<strong>{{ q }}</strong>"{% else %}Enter a query to search the global graph{% endif %}</p>
+        </div>
+    </div>
+</div>
+
+{% if q %}
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-10">
+            {% if results %}
+                <h5 class="fw-bold text-muted mb-4 border-bottom pb-2">{{ results|length }} Researcher{% if results|length != 1 %}s{% endif %} Found</h5>
+                <div class="d-flex flex-column gap-3">
+                    {% for r in results %}
+                    <div class="card result-card shadow-sm rounded-3">
+                        <div class="card-body p-4">
+                            <div class="row align-items-center">
+                                <div class="col-md-7 d-flex align-items-center mb-3 mb-md-0">
+                                    <img src="{{ r.avatar(80) }}" class="rounded-circle me-4 border border-2 border-light shadow-sm" width="80" height="80" alt="Avatar">
+                                    <div>
+                                        <h4 class="fw-bold academic-header mb-1">{{ r.display_name }}</h4>
+                                        <div class="text-muted small mb-1"><i class="bi bi-building me-1"></i>{{ r.affiliation or 'Independent Researcher' }}</div>
+                                        
+                                        {% if r.emails %}
+                                            <div class="text-secondary small mt-2">
+                                                <i class="bi bi-envelope me-1"></i>
+                                                {% for e in r.emails %}
+                                                    <a href="mailto:{{ e.email }}" class="text-secondary text-decoration-none hover-primary">{{ e.email }}</a>{% if not loop.last %}, {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="col-md-5 d-flex flex-wrap gap-2 justify-content-md-end border-md-start ps-md-4">
+                                    <a href="{{ url_for('main.public_network', slug=r.slug) }}" class="btn btn-primary shadow-sm flex-grow-1 flex-md-grow-0"><i class="bi bi-diagram-3 me-1"></i>View ResearchGraph</a>
+                                    <a href="{{ url_for('main.view_profile', slug=r.slug) }}" class="btn btn-outline-secondary shadow-sm flex-grow-1 flex-md-grow-0"><i class="bi bi-person-vcard me-1"></i>Full Data</a>
+                                    
+                                    {% if current_user.is_authenticated %}
+                                        <div class="w-100 mt-2 text-md-end">
+                                        {% if not current_user.researcher_id %}
+                                            <form method="POST" action="{{ url_for('auth.claim_researcher', uuid=r.uuid) }}" class="d-inline">
+                                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                                <button type="submit" class="btn btn-outline-success btn-sm w-100"><i class="bi bi-check-circle me-1"></i>Claim This Profile</button>
+                                            </form>
+                                        {% elif current_user.researcher_id != r.uuid %}
+                                            <button class="btn btn-success btn-sm shadow-sm w-100" data-bs-toggle="modal" data-bs-target="#addCollabModal" data-target-uuid="{{ r.uuid }}" data-target-name="{{ r.display_name }}"><i class="bi bi-plus-circle me-1"></i>Add Collaboration</button>
+                                        {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="text-center py-5 bg-light rounded-4 border">
+                    <i class="bi bi-search text-muted mb-3" style="font-size: 3rem;"></i>
+                    <h4 class="fw-bold text-dark">No researchers found.</h4>
+                    <p class="text-muted">We couldn't find anyone matching "{{ q }}".</p>
+                    {% if current_user.is_authenticated %}
+                        <p class="mt-3">If you are searching for yourself and cannot find your record, you can submit a request to our moderators to be securely added.</p>
+                        <!-- Add request button logic could go here -->
+                    {% else %}
+                        <p class="mt-3">Log in or create an account to suggest additions to the database.</p>
+                    {% endif %}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endif %}
+
+<!-- Add Collaboration Modal -->
+<div class="modal fade" id="addCollabModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <form method="POST" action="{{ url_for('network.add_edge') }}">
+          <div class="modal-header border-bottom-0 bg-light rounded-top-4 pb-0 pt-4 px-4">
+            <h5 class="modal-title fw-bold academic-header"><i class="bi bi-diagram-3-fill text-success me-2"></i>Add Collaboration</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body p-4">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <input type="hidden" name="target_researcher_uuid" id="modalTargetUuid">
+            <p class="mb-4">You are drawing a new edge in the global graph between yourself and <strong id="modalTargetName" class="text-primary"></strong>.</p>
+            
+            <div class="mb-3">
+                <label class="form-label fw-bold text-muted small text-uppercase">Collaboration Status</label>
+                <select name="status" class="form-select form-select-lg bg-light" required>
+                    <option value="ESTABLISHED">Established (Completed past works)</option>
+                    <option value="ONGOING">Ongoing (Currently working together)</option>
+                </select>
+                <small class="text-muted mt-2 d-block">This action is public and will immediately appear on both of your graphs.</small>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0 px-4 pb-4 pt-0">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-success fw-bold px-4">Add Edge</button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var addCollabModal = document.getElementById('addCollabModal');
+    if(addCollabModal) {
+        addCollabModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+            var targetUuid = button.getAttribute('data-target-uuid');
+            var targetName = button.getAttribute('data-target-name');
+            
+            document.getElementById('modalTargetUuid').value = targetUuid;
+            document.getElementById('modalTargetName').textContent = targetName;
+        });
+    }
+});
+</script>
+{% endblock %}

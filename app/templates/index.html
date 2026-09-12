@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% block title %}ResearchGraph - Map Your Academic Network{% endblock %}
+{% block content %}
+<style>
+    .hero-section {
+        background-image: radial-gradient(rgba(0, 33, 71, 0.05) 1px, transparent 1px);
+        background-size: 25px 25px;
+    }
+    .academic-header {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        color: #002147;
+    }
+    .feature-icon {
+        width: 70px; 
+        height: 70px;
+        transition: transform 0.3s ease;
+    }
+    .feature-card:hover .feature-icon {
+        transform: scale(1.1);
+    }
+</style>
+
+<div class="row align-items-center mb-5 py-5 hero-section rounded-4 mt-3">
+    <div class="col-lg-7 px-md-5">
+        <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-bold border border-primary border-opacity-25"><i class="bi bi-shield-check me-1"></i> Based exclusively on verifiable public data</span>
+        <h1 class="display-4 fw-bold academic-header mb-3">Map the Global <br><span class="text-primary">Research Collaboration</span> Graph</h1>
+        <p class="lead text-secondary mb-4" style="line-height: 1.6;">
+            ResearchGraph is an open platform where mathematicians and scientists map their academic connections. 
+            Claim your profile, crowdsource your connections, and get a permanent, beautiful visualization of your personal research network.
+        </p>
+        
+        <div class="bg-white p-4 rounded-4 shadow-sm border mb-4">
+            <h5 class="fw-bold academic-header mb-1"><i class="bi bi-search text-primary me-2"></i>Find a Researcher</h5>
+            <p class="text-muted small mb-3">Are you a researcher? There's a high chance you're already in our graph. Search your name below!</p>
+            <form method="GET" action="{{ url_for('main.search') }}" class="d-flex">
+                <input type="text" name="q" class="form-control form-control-lg me-2 bg-light border-0 shadow-none" placeholder="Search by name or institutional email..." required>
+                <button class="btn btn-primary btn-lg px-4 shadow-sm" type="submit"><i class="bi bi-arrow-right"></i></button>
+            </form>
+        </div>
+        
+        <div class="d-flex align-items-center gap-3">
+            <a href="{{ url_for('main.global_network') }}" class="btn btn-outline-primary fw-bold rounded-pill px-4"><i class="bi bi-globe me-2"></i>Explore Global Graph</a>
+            {% if not current_user.is_authenticated %}
+            <span class="text-muted small">or <a href="{{ url_for('auth.register') }}" class="fw-bold text-decoration-none ms-1">Create an Account &rarr;</a></span>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-lg-5 d-none d-lg-block position-relative text-center">
+        <!-- Themed Graph Illustration -->
+        <div class="position-relative mx-auto" style="width: 350px; height: 350px;">
+            <div class="position-absolute top-50 start-50 translate-middle rounded-circle border border-primary border-opacity-25" style="width: 320px; height: 320px;"></div>
+            <div class="position-absolute top-50 start-50 translate-middle rounded-circle border border-secondary border-opacity-25 border-dashed" style="width: 220px; height: 220px; border-style: dashed;"></div>
+            
+            <div class="position-absolute top-50 start-50 translate-middle rounded-circle bg-white shadow d-flex align-items-center justify-content-center border border-3 border-primary z-index-2" style="width: 100px; height: 100px;">
+                <i class="bi bi-person-fill text-primary" style="font-size: 3.5rem;"></i>
+            </div>
+            
+            <!-- Nodes around orbit -->
+            <div class="position-absolute shadow-sm rounded-circle bg-white border border-2 border-success d-flex align-items-center justify-content-center" style="width: 50px; height: 50px; top: 10%; left: 20%;">
+                <i class="bi bi-person text-success fs-4"></i>
+            </div>
+            <div class="position-absolute shadow-sm rounded-circle bg-white border border-2 border-primary d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; bottom: 15%; right: 10%;">
+                <i class="bi bi-person text-primary fs-4"></i>
+            </div>
+            <div class="position-absolute shadow-sm rounded-circle bg-white border border-2 border-warning d-flex align-items-center justify-content-center" style="width: 45px; height: 45px; top: 30%; right: 5%;">
+                <i class="bi bi-person text-warning fs-5"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 py-5 border-top">
+    <div class="col-md-4 feature-card px-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-4 feature-icon">
+            <i class="bi bi-shield-lock fs-2"></i>
+        </div>
+        <h4 class="fw-bold academic-header mb-3">1. Strictly Curated Data</h4>
+        <p class="text-secondary" style="line-height: 1.6;">The master database of researchers is exclusively built on public information and is strictly curated by our dedicated moderation team to prevent duplicates and maintain academic integrity.</p>
+    </div>
+    <div class="col-md-4 feature-card px-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-4 feature-icon">
+            <i class="bi bi-diagram-3 fs-2"></i>
+        </div>
+        <h4 class="fw-bold academic-header mb-3">2. Crowdsourced Network</h4>
+        <p class="text-secondary" style="line-height: 1.6;">While the identities are locked, the collaborations are completely crowdsourced. Anyone in the community can log in and map established (past) or ongoing research connections between peers.</p>
+    </div>
+    <div class="col-md-4 feature-card px-4">
+        <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info rounded-circle mb-4 feature-icon">
+            <i class="bi bi-globe fs-2"></i>
+        </div>
+        <h4 class="fw-bold academic-header mb-3">3. Global & Personal Graphs</h4>
+        <p class="text-secondary" style="line-height: 1.6;">Browse the massive interconnected <a href="{{ url_for('main.global_network') }}" class="text-decoration-none">global network</a>, or get a stable, permanent URL to a visualization of your own personal network to embed on your academic website.</p>
+    </div>
+</div>
+
+<!-- CTA Footer -->
+<div class="py-5 text-center mt-4">
+    <h3 class="fw-bold academic-header mb-3">Ready to claim your profile?</h3>
+    <p class="text-secondary mb-4">Find yourself in the database and verify your institutional email to take control of your public record.</p>
+    <a href="{{ url_for('main.search') }}" class="btn btn-primary btn-lg rounded-pill px-5 fw-bold shadow-sm">Search the Database</a>
+</div>
+{% endblock %}
