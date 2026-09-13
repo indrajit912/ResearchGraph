@@ -34,7 +34,7 @@
                 
                 <a href="{{ url_for('main.view_profile', slug=researcher.slug) }}" class="btn btn-outline-primary w-100 mb-2"><i class="bi bi-person-badge me-2"></i>View Public Profile</a>
                 <a href="{{ url_for('main.public_network', slug=researcher.slug) }}" class="btn btn-academic w-100 mb-2"><i class="bi bi-diagram-3-fill me-2"></i>View ResearchGraph</a>
-                <a href="#" class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#reportResearcherModal"><i class="bi bi-pencil-square me-2"></i>Suggest Correction</a>
+                <a href="#" class="btn btn-outline-secondary w-100 mb-3" data-bs-toggle="modal" data-bs-target="#reportResearcherModal"><i class="bi bi-envelope me-2"></i>Request Update</a>
                 
                 <div class="mt-4 pt-3 border-top text-start">
                     <p class="small text-muted mb-1 fw-bold"><i class="bi bi-link-45deg me-1"></i>Permanent Embed URL</p>
@@ -67,7 +67,17 @@
             <span class="badge bg-secondary fs-6">{{ collaborations|length }} connections</span>
         </div>
         
-        <p class="text-muted mb-4">Manage your direct collaborations in the global ResearchGraph directory.</p>
+        <div class="alert alert-info shadow-sm bg-white border-0 border-start border-4 border-info mb-4">
+            <h6 class="fw-bold mb-2"><i class="bi bi-info-circle-fill me-2 text-info"></i>Managing Your Profile & Network</h6>
+            <ul class="mb-0 small text-muted px-3" style="line-height: 1.6;">
+                <li><strong>Your Profile:</strong> To change information on your profile (Affiliation, Links, etc.), visit your <a href="{{ url_for('main.view_profile', slug=researcher.slug) }}">Public Profile</a> and click the <strong>"Edit Profile"</strong> button.</li>
+                <li><strong>Core Identity Changes:</strong> For changes to your Name, Email, or other core details, click <strong>"Request Update"</strong> on the left panel to send a message to moderators. You can use this button for any general queries as well.</li>
+                <li><strong>Your Collaborators:</strong> Below is a list of your collaborators according to our database.</li>
+                <li><strong>Status Meaning:</strong> <span class="badge bg-success" style="font-size: 0.6rem;">ESTABLISHED</span> means past completed works. <span class="badge bg-warning text-dark" style="font-size: 0.6rem;">ONGOING</span> means currently working together.</li>
+                <li><strong>Managing Connections:</strong> To change a collaboration's status, click the <i class="bi bi-pencil border p-1 rounded"></i> edit button. To delete it entirely, click the <i class="bi bi-trash border p-1 rounded"></i> delete button. To suggest a spelling correction for a collaborator, click the <i class="bi bi-flag border p-1 rounded"></i> flag button.</li>
+                <li><strong>Add New:</strong> To add a new collaborator, search for them in the "Find Collaborators" box on the left, then click "Add Collaboration" in the search results. If you cannot find your collaborator in the search, please use the <strong>"Request Update"</strong> button to send us their details (Name, Institution, Email) and specify whether the connection is ESTABLISHED or ONGOING.</li>
+            </ul>
+        </div>
         
         {% if collaborations %}
         <div class="list-group shadow-sm">
@@ -82,7 +92,28 @@
                             <span class="badge bg-{{ 'success' if c.status.name == 'ESTABLISHED' else 'warning text-dark' }} ms-2" style="font-size: 0.7rem;">{{ c.status.name }}</span>
                         </div>
                     </div>
-                    <div>
+                    <div class="d-flex align-items-center">
+                        <div class="dropdown d-inline-block me-1">
+                            <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Change Collaboration Status">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <ul class="dropdown-menu shadow-sm">
+                                <li>
+                                    <form method="POST" action="{{ url_for('network.edit_edge_status', collab_id=c.id) }}" class="m-0 p-0">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="ESTABLISHED">
+                                        <button type="submit" class="dropdown-item {% if c.status.name == 'ESTABLISHED' %}active{% endif %}">Set to ESTABLISHED</button>
+                                    </form>
+                                </li>
+                                <li>
+                                    <form method="POST" action="{{ url_for('network.edit_edge_status', collab_id=c.id) }}" class="m-0 p-0">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <input type="hidden" name="status" value="ONGOING">
+                                        <button type="submit" class="dropdown-item {% if c.status.name == 'ONGOING' %}active{% endif %}">Set to ONGOING</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
                         
                         <form method="POST" action="{{ url_for('network.remove_edge', collab_id=c.id) }}" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this collaboration from the global graph?');">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -134,22 +165,22 @@
 <div class="modal fade" id="reportResearcherModal" tabindex="-1">
   <div class="modal-dialog">
     <div class="modal-content">
-      <form method="POST" action="{{ url_for('network.report_researcher') }}">
+      <form method="POST" action="{{ url_for('network.report_researcher') }}" id="requestUpdateForm">
           <div class="modal-header">
-            <h5 class="modal-title academic-header">Suggest Profile Correction</h5>
+            <h5 class="modal-title academic-header">Request Update / Query</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <input type="hidden" name="researcher_uuid" value="{{ researcher.uuid }}">
-            <p>Suggest a correction for <strong>{{ researcher.display_name }}</strong>'s public data.</p>
+            <p>Send a message to moderators regarding changes to core fields (Name, Email, etc.) or any other queries.</p>
             <div class="mb-3">
-                <label class="form-label text-muted small fw-bold text-uppercase">Proposed Changes</label>
-                <textarea name="message" class="form-control bg-light" rows="3" required placeholder="List the missing or incorrect information..."></textarea>
+                <label class="form-label text-muted small fw-bold text-uppercase">Your Message</label>
+                <textarea name="message" class="form-control bg-light" rows="4" required placeholder="Describe what you need help with..."></textarea>
             </div>
           </div>
           <div class="modal-footer border-0">
-            <button type="submit" class="btn btn-academic">Submit Suggestion</button>
+            <button type="submit" class="btn btn-academic" id="requestUpdateBtn">Send Message</button>
           </div>
       </form>
     </div>
@@ -158,6 +189,16 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    var requestUpdateForm = document.getElementById('requestUpdateForm');
+    if(requestUpdateForm) {
+        requestUpdateForm.addEventListener('submit', function() {
+            var btn = document.getElementById('requestUpdateBtn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
+            }
+        });
+    }
 
     // Initialize tooltips
     var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))

@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}Register - ResearchGraph{% endblock %}
+{% block title %}Register - ResearchGraph
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var registerForm = document.getElementById('registerForm');
+    if(registerForm) {
+        registerForm.addEventListener('submit', function() {
+            var btn = document.getElementById('registerBtn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Registering...';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
 {% block content %}
 <style>
     .auth-wrapper {
@@ -51,7 +66,7 @@
                             <p class="text-muted small">Curate the people, crowdsource the connections.</p>
                         </div>
                         
-                        <form method="POST" action="">
+                        <form method="POST" action="" id="registerForm">
                             {{ form.hidden_tag() }}
                             <div class="mb-3">
                                 <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-envelope me-1"></i> {{ form.email.label.text }}</label>
@@ -69,7 +84,7 @@
                                 {% for error in form.confirm_password.errors %}<div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>{% endfor %}
                             </div>
                             <div class="d-grid mb-4">
-                                {{ form.submit(class="btn btn-primary btn-lg fw-bold") }}
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold" id="registerBtn">{{ form.submit.label.text }}</button>
                             </div>
                         </form>
                         
@@ -82,4 +97,19 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var registerForm = document.getElementById('registerForm');
+    if(registerForm) {
+        registerForm.addEventListener('submit', function() {
+            var btn = document.getElementById('registerBtn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Registering...';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

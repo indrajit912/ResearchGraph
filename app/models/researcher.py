@@ -42,6 +42,7 @@ class Researcher(db.Model):
     country = db.Column(db.String(100), nullable=True)
     
     # Academic metadata
+    research_interests = db.Column(db.Text, nullable=True)
     phd_institute = db.Column(db.String(255), nullable=True)
     phd_year = db.Column(db.Integer, nullable=True)
     

@@ -1,3 +1,4 @@
+from markupsafe import Markup
 from flask import render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, current_user, login_required
 from app.extensions import db
@@ -9,7 +10,7 @@ from .forms import RegistrationForm, LoginForm, RequestResetForm, ResetPasswordF
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('network.dashboard') if current_user.researcher_id else url_for('main.welcome'))
     form = RegistrationForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
@@ -23,7 +24,7 @@ def register():
         db.session.commit()
         
         EmailService.send_verification_email(new_user.email)
-        flash('Registration successful! Please check your email to verify your account.', 'success')
+        flash(Markup('Registration successful! Please check your email to verify your account. <br><span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please also check your spam/junk folder!</span>'), 'success')
         return redirect(url_for('auth.login'))
         
     return render_template('auth/register.html', form=form)
@@ -31,7 +32,7 @@ def register():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('network.dashboard') if current_user.researcher_id else url_for('main.welcome'))
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
@@ -81,21 +82,23 @@ def verify_email(token):
 @auth_bp.route('/reset-password-request', methods=['GET', 'POST'])
 def reset_password_request():
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('network.dashboard') if current_user.researcher_id else url_for('main.welcome'))
     form = RequestResetForm()
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user:
             EmailService.send_password_reset_email(user.email)
-        # Always display this to prevent email enumeration
-        flash('An email has been sent with instructions to reset your password.', 'info')
-        return redirect(url_for('auth.login'))
+            flash(Markup('An email has been sent with instructions to reset your password. <br><span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please also check your spam/junk folder!</span>'), 'info')
+            return redirect(url_for('auth.login'))
+        else:
+            flash('The user account does not exist.', 'danger')
+            return redirect(url_for('auth.reset_password_request'))
     return render_template('auth/reset_request.html', form=form)
 
 @auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
-        return redirect(url_for('main.index'))
+        return redirect(url_for('network.dashboard') if current_user.researcher_id else url_for('main.welcome'))
         
     email = EmailService.verify_token(token, salt='password-reset-salt')
     if not email:
@@ -147,7 +150,7 @@ def claim_researcher(uuid):
             pass
             
     emails_str = ", ".join(obfuscated_emails)
-    flash(f"Verification sent! Please check the following email(s) to confirm: {emails_str}", "info")
+    flash(Markup(f'Verification sent! Please check the following email(s) to confirm: {emails_str} <br><span class="text-danger fw-bold"><i class="bi bi-exclamation-triangle-fill me-1"></i>Please also check your spam/junk folder!</span>'), "info")
     return redirect(url_for('main.index'))
 
 @auth_bp.route('/verify-claim/<token>')

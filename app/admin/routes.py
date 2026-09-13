@@ -127,9 +127,11 @@ def edit_researcher(uuid):
         form.emails.data = ", ".join([e.email for e in researcher.emails])
         
     if form.validate_on_submit():
+        # Prevent WTForms from trying to populate the emails relationship as a string
+        emails_field = form._fields.pop('emails', None)
         form.populate_obj(researcher)
-        
-        # Update display name if name changed
+        if emails_field:
+            form._fields['emails'] = emails_field
         display_name = f"{researcher.first_name} {researcher.last_name}"
         if researcher.middle_name:
             display_name = f"{researcher.first_name} {researcher.middle_name} {researcher.last_name}"
@@ -160,6 +162,10 @@ def edit_researcher(uuid):
         db.session.commit()
         flash('Researcher updated successfully.', 'success')
         return redirect(url_for('admin.view_researcher', uuid=researcher.uuid))
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{getattr(form, field).label.text}: {error}", "danger")
         
     return render_template('admin/researchers/edit.html', form=form, researcher=researcher)
 
@@ -198,23 +204,52 @@ def list_users():
 @login_required
 @requires_role('ADMIN', 'SUPERADMIN')
 def manage_roles(uuid):
+    from flask import abort
     target_user = User.query.filter_by(uuid=uuid).first_or_404()
     
-    # Superadmin protection
-    if target_user.has_role('SUPERADMIN') and not current_user.has_role('SUPERADMIN'):
-        flash("Admins cannot modify a SUPERADMIN account.", "danger")
-        return redirect(url_for('admin.list_users'))
-        
-    all_roles = Role.query.all()
+    # Evaluate Actor Roles (highest)
+    actor_is_superadmin = current_user.has_role('SUPERADMIN')
+    actor_is_admin = current_user.has_role('ADMIN') and not actor_is_superadmin
     
+    # Evaluate Target Roles (highest)
+    target_is_superadmin = target_user.has_role('SUPERADMIN')
+    target_is_admin = target_user.has_role('ADMIN') and not target_is_superadmin
+    target_is_moderator = target_user.has_role('MODERATOR') and not (target_is_admin or target_is_superadmin)
+    target_is_user = not (target_is_superadmin or target_is_admin or target_is_moderator)
+    
+    # 1. Block Admin Self-Modification
+    if actor_is_admin and target_user.id == current_user.id:
+        abort(403)
+        
+    # 2. Block Admin from modifying equals or superiors
+    if actor_is_admin and (target_is_admin or target_is_superadmin):
+        abort(403)
+        
+    all_roles = Role.query.filter(Role.name != 'USER').all()
+    allowed_roles_for_ui = []
+    
+    if actor_is_superadmin:
+        allowed_roles_for_ui = [r for r in all_roles]
+    elif actor_is_admin:
+        if target_is_user:
+            allowed_roles_for_ui = [r for r in all_roles if r.name == 'MODERATOR']
+        elif target_is_moderator:
+            allowed_roles_for_ui = [r for r in all_roles if r.name == 'ADMIN']
+            
     if request.method == 'POST':
         selected_roles = request.form.getlist('roles')
         
-        # Superadmin protection for removing own superadmin
-        if 'SUPERADMIN' not in selected_roles and target_user.id == current_user.id and current_user.has_role('SUPERADMIN'):
-            flash("You cannot remove your own SUPERADMIN role.", "danger")
-            return redirect(url_for('admin.manage_roles', uuid=uuid))
-            
+        if actor_is_admin:
+            if 'SUPERADMIN' in selected_roles or 'USER' in selected_roles:
+                abort(403)
+            # Admin can only transition User->Moderator or Moderator->Admin
+            if target_is_user and set(selected_roles) != {'MODERATOR'}:
+                abort(403)
+            elif target_is_moderator and set(selected_roles) != {'ADMIN'}:
+                abort(403)
+            elif not target_is_user and not target_is_moderator:
+                abort(403)
+                
         target_user.roles = []
         for role_name in selected_roles:
             r = Role.query.filter_by(name=role_name).first()
@@ -225,7 +260,7 @@ def manage_roles(uuid):
         flash("Roles updated successfully.", "success")
         return redirect(url_for('admin.list_users'))
         
-    return render_template('admin/users/roles.html', target_user=target_user, all_roles=all_roles)
+    return render_template('admin/users/roles.html', target_user=target_user, allowed_roles=allowed_roles_for_ui)
 
 @admin_bp.route('/moderation')
 @login_required

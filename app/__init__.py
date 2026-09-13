@@ -77,8 +77,21 @@ def create_app(config_name='default'):
         click.echo("Superadmin successfully created/updated!")
 
 
+
     # Error Handlers
     from flask import render_template
+    from datetime import timezone, timedelta
+    
+    @app.template_filter('format_ist')
+    def format_ist(dt):
+        if not dt:
+            return ""
+        if dt.tzinfo is None:
+            dt = dt.replace(tzinfo=timezone.utc)
+        ist_tz = timezone(timedelta(hours=5, minutes=30))
+        dt_ist = dt.astimezone(ist_tz)
+        return dt_ist.strftime('%b %d, %Y %I:%M %p (IST)')
+
     
     @app.errorhandler(404)
     def page_not_found(e):

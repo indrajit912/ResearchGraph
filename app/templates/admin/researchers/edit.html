@@ -49,6 +49,11 @@
             </div>
             
             <div class="row mb-4">
+                <div class="col-12 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-lightbulb me-1"></i> {{ form.research_interests.label.text }}</label>
+                    {{ form.research_interests(class="form-control bg-light", rows="3", placeholder="Comma separated or short paragraph") }}
+                    <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>You can use LaTeX syntax for math symbols (e.g. <code>$C^*$</code>).</small>
+                </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-mortarboard me-1"></i> {{ form.phd_institute.label.text }}</label>
                     {{ form.phd_institute(class="form-control bg-light") }}
@@ -68,10 +73,12 @@
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small fw-bold text-uppercase">{{ form.orcid.label.text }}</label>
                     {{ form.orcid(class="form-control bg-light") }}
+                    <small class="text-danger d-block mt-1">Paste ONLY the ID, not the full URL.</small>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small fw-bold text-uppercase">{{ form.arxiv_id.label.text }}</label>
                     {{ form.arxiv_id(class="form-control bg-light") }}
+                    <small class="text-danger d-block mt-1">Paste ONLY the ID, not the full URL.</small>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label text-muted small fw-bold text-uppercase">{{ form.google_scholar_url.label.text }}</label>

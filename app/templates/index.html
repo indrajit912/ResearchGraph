@@ -71,26 +71,33 @@
 </div>
 
 <div class="row g-4 py-5 border-top">
-    <div class="col-md-4 feature-card px-4">
+    <div class="col-md-3 feature-card px-3">
+        <div class="d-inline-flex align-items-center justify-content-center bg-warning bg-opacity-10 text-warning rounded-circle mb-4 feature-icon">
+            <i class="bi bi-search fs-2"></i>
+        </div>
+        <h5 class="fw-bold academic-header mb-3">The "One-Stop" Directory</h5>
+        <p class="text-secondary small" style="line-height: 1.6;">For early-career researchers, finding experts, tracking their active collaborations, and hunting down institutional emails across different university sites is exhausting. ResearchGraph brings all verified links, emails, and connections into a single place.</p>
+    </div>
+    <div class="col-md-3 feature-card px-3">
         <div class="d-inline-flex align-items-center justify-content-center bg-primary bg-opacity-10 text-primary rounded-circle mb-4 feature-icon">
             <i class="bi bi-shield-lock fs-2"></i>
         </div>
-        <h4 class="fw-bold academic-header mb-3">1. Strictly Curated Data</h4>
-        <p class="text-secondary" style="line-height: 1.6;">The master database of researchers is exclusively built on public information and is strictly curated by our dedicated moderation team to prevent duplicates and maintain academic integrity.</p>
+        <h5 class="fw-bold academic-header mb-3">Strictly Curated Data</h5>
+        <p class="text-secondary small" style="line-height: 1.6;">The master database of researchers is exclusively built on public information and is strictly curated by our moderation team to prevent duplicates and maintain high academic integrity.</p>
     </div>
-    <div class="col-md-4 feature-card px-4">
+    <div class="col-md-3 feature-card px-3">
         <div class="d-inline-flex align-items-center justify-content-center bg-success bg-opacity-10 text-success rounded-circle mb-4 feature-icon">
             <i class="bi bi-diagram-3 fs-2"></i>
         </div>
-        <h4 class="fw-bold academic-header mb-3">2. Crowdsourced Network</h4>
-        <p class="text-secondary" style="line-height: 1.6;">While the identities are locked, the collaborations are completely crowdsourced. Anyone in the community can log in and map established (past) or ongoing research connections between peers.</p>
+        <h5 class="fw-bold academic-header mb-3">Crowdsourced Network</h5>
+        <p class="text-secondary small" style="line-height: 1.6;">While identities are locked, collaborations are completely crowdsourced. Anyone in the community can map established or ongoing research connections between peers.</p>
     </div>
-    <div class="col-md-4 feature-card px-4">
+    <div class="col-md-3 feature-card px-3">
         <div class="d-inline-flex align-items-center justify-content-center bg-info bg-opacity-10 text-info rounded-circle mb-4 feature-icon">
             <i class="bi bi-globe fs-2"></i>
         </div>
-        <h4 class="fw-bold academic-header mb-3">3. Global & Personal Graphs</h4>
-        <p class="text-secondary" style="line-height: 1.6;">Browse the massive interconnected <a href="{{ url_for('main.global_network') }}" class="text-decoration-none">global network</a>, or get a stable, permanent URL to a visualization of your own personal network to embed on your academic website.</p>
+        <h5 class="fw-bold academic-header mb-3">Global & Personal Graphs</h5>
+        <p class="text-secondary small" style="line-height: 1.6;">Browse the massive interconnected <a href="{{ url_for('main.global_network') }}" class="text-decoration-none">global network</a>, or get a stable, permanent URL to a visualization of your own personal network to embed on your website.</p>
     </div>
 </div>
 

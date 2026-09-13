@@ -32,7 +32,7 @@
                 ResearchGraph is a massive crowdsourced undertaking, but the accuracy and integrity of our underlying mathematical network rely entirely on a dedicated core team. 
             </p>
             <p class="fs-5 text-secondary">
-                I owe a massive debt of gratitude to the administrators and moderators listed below. Without their tireless efforts to verify affiliations, merge duplicate records, and curate the global database, this project would dissolve into chaos. Thank you for keeping the graph clean!
+                I owe a massive debt of gratitude to the admins and moderators listed below. Without their tireless efforts to verify affiliations, merge duplicate records, and curate the global database, this project would dissolve into chaos. Thank you for keeping the graph clean!
             </p>
         </div>
     </div>
@@ -65,8 +65,8 @@
 
             <!-- Admins -->
             <div class="role-section">
-                <h3 class="academic-header fw-bold mb-3"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Administrators</h3>
-                <p class="text-secondary mb-4">Administrators oversee the platform's daily operations. They manage the moderation team, resolve high-level disputes regarding network accuracy, and ensure our scientific data guidelines are universally upheld.</p>
+                <h3 class="academic-header fw-bold mb-3"><i class="bi bi-shield-lock-fill text-primary me-2"></i>Admins</h3>
+                <p class="text-secondary mb-4">Admins oversee the platform's daily operations. They manage the moderation team, resolve high-level disputes regarding network accuracy, and ensure our scientific data guidelines are universally upheld.</p>
                 
                 <div class="row">
                     {% for admin in admins %}
@@ -88,7 +88,7 @@
                         </div>
                     </div>
                     {% else %}
-                    <div class="col-12"><p class="text-muted fst-italic">No administrators currently assigned.</p></div>
+                    <div class="col-12"><p class="text-muted fst-italic">No admins currently assigned.</p></div>
                     {% endfor %}
                 </div>
             </div>
@@ -133,7 +133,7 @@
                         <p class="fs-6 text-white-50 mx-auto mb-4" style="max-width: 600px;">
                             We are always looking for passionate researchers to help us maintain the integrity of the database! 
                             To apply, you must first <a href="{{ url_for('auth.register') }}" class="text-white fw-bold text-decoration-underline">create an account</a> and verify your academic profile. 
-                            Then, simply send a request to myself or any of the Administrators through your dashboard, and we will contact you shortly!
+                            Then, simply send a request to myself or any of the Admins through your dashboard, and we will contact you shortly!
                         </p>
                         <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg fw-bold px-4 rounded-pill shadow-sm text-primary">Get Started Now</a>
                     </div>

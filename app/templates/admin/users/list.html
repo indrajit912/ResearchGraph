@@ -19,7 +19,27 @@
                 {% endfor %}
             </td>
             <td>
+                {% set u_is_superadmin = u.has_role('SUPERADMIN') %}
+                {% set u_is_admin = u.has_role('ADMIN') and not u_is_superadmin %}
+                {% set u_is_moderator = u.has_role('MODERATOR') and not (u_is_admin or u_is_superadmin) %}
+                
+                {% set actor_is_superadmin = current_user.has_role('SUPERADMIN') %}
+                {% set actor_is_admin = current_user.has_role('ADMIN') and not actor_is_superadmin %}
+                
+                {% set can_manage = false %}
+                {% if actor_is_superadmin %}
+                    {% set can_manage = true %}
+                {% elif actor_is_admin %}
+                    {% if u.id != current_user.id and not u_is_superadmin and not u_is_admin %}
+                        {% set can_manage = true %}
+                    {% endif %}
+                {% endif %}
+
+                {% if can_manage %}
                 <a href="{{ url_for('admin.manage_roles', uuid=u.uuid) }}" class="btn btn-sm btn-primary">Manage Roles</a>
+                {% else %}
+                <button class="btn btn-sm btn-secondary" disabled>Manage Roles</button>
+                {% endif %}
             </td>
         </tr>
         {% endfor %}

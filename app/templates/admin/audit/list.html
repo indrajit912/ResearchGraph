@@ -4,7 +4,7 @@
 <table class="table table-sm table-striped mt-3" style="font-size: 0.9rem;">
     <thead>
         <tr>
-            <th>Timestamp (UTC)</th>
+            <th>Timestamp (IST)</th>
             <th>User ID</th>
             <th>Action</th>
             <th>Object</th>
@@ -14,7 +14,7 @@
     <tbody>
         {% for log in logs %}
         <tr>
-            <td>{{ log.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            <td>{{ log.timestamp|format_ist }}</td>
             <td>{{ log.user_id or 'System' }}</td>
             <td><span class="badge bg-primary">{{ log.action }}</span></td>
             <td>{{ log.object_type }}:{{ log.object_id }}</td>

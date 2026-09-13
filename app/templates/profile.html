@@ -11,10 +11,13 @@
                         <div>
                             <h1 class="fw-bold mb-1">{{ researcher.display_name }}</h1>
 
-                        <p class="text-muted fs-5 mb-0">{{ researcher.affiliation }}</p>
+                        <p class="text-muted fs-5 mb-0">{{ researcher.affiliation or 'No Affiliation Provided' }}</p>
                         </div>
                     </div>
                     <div>
+                        {% if current_user.is_authenticated and current_user.researcher_id == researcher.uuid %}
+                        <a href="{{ url_for('network.edit_my_profile') }}" class="btn btn-outline-primary me-2"><i class="bi bi-pencil-square me-1"></i>Edit Profile</a>
+                        {% endif %}
                         <a href="{{ url_for('main.public_network', slug=researcher.slug) }}" class="btn btn-primary"><i class="bi bi-diagram-3 me-2"></i>View ResearchGraph</a>
                     </div>
                 </div>
@@ -29,42 +32,48 @@
 
                 <h5 class="fw-bold border-bottom pb-2 mb-3">Professional Details</h5>
                 <div class="row mb-4">
+                    <div class="col-12 mb-3">
+                        <small class="text-muted d-block text-uppercase fw-bold">Research Interests</small>
+                        <p class="mb-0" style="white-space: pre-wrap;">{% if researcher.research_interests %}{{ researcher.research_interests }}{% else %}<span class="text-muted">N/A</span>{% endif %}</p>
+                    </div>
                     <div class="col-md-6 mb-3">
                         <small class="text-muted d-block text-uppercase fw-bold">Department</small>
-                        <span>{{ researcher.department or 'N/A' }}</span>
+                        <span>{% if researcher.department %}{{ researcher.department }}{% else %}<span class="text-muted">N/A</span>{% endif %}</span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <small class="text-muted d-block text-uppercase fw-bold">PhD Institute & Year</small>
-                        <span>{{ researcher.phd_institute or 'N/A' }} {% if researcher.phd_year %}({{ researcher.phd_year }}){% endif %}</span>
+                        <span>{% if researcher.phd_institute %}{{ researcher.phd_institute }} {% if researcher.phd_year %}({{ researcher.phd_year }}){% endif %}{% else %}<span class="text-muted">N/A</span>{% endif %}</span>
                     </div>
                     <div class="col-md-6 mb-3">
                         <small class="text-muted d-block text-uppercase fw-bold">Location</small>
                         <span>
-                            {{ researcher.city or '' }} 
-                            {{ researcher.state or '' }} 
-                            {{ researcher.country or 'N/A' }}
+                            {% set loc = [researcher.address, researcher.city, researcher.state, researcher.country] | reject('none') | reject('equalto', '') | list %}
+                            {% if loc %}
+                                {{ loc | join(', ') }}
+                            {% else %}
+                                <span class="text-muted">N/A</span>
+                            {% endif %}
                         </span>
                     </div>
                 </div>
 
                 <h5 class="fw-bold border-bottom pb-2 mb-3">Links & Identifiers</h5>
-                <div class="row mb-4">
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block text-uppercase fw-bold">Website</small>
-                        {% if researcher.website %}<a href="{{ researcher.website }}" target="_blank">{{ researcher.website }}</a>{% else %}N/A{% endif %}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block text-uppercase fw-bold">ORCID</small>
-                        {% if researcher.orcid %}{{ researcher.orcid }}{% else %}N/A{% endif %}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block text-uppercase fw-bold">arXiv ID</small>
-                        {% if researcher.arxiv_id %}{{ researcher.arxiv_id }}{% else %}N/A{% endif %}
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <small class="text-muted d-block text-uppercase fw-bold">Google Scholar</small>
-                        {% if researcher.google_scholar_url %}<a href="{{ researcher.google_scholar_url }}" target="_blank">View Profile</a>{% else %}N/A{% endif %}
-                    </div>
+                <div class="d-flex flex-wrap gap-2 mb-4">
+                    {% if researcher.website %}
+                    <a href="{{ researcher.website }}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="bi bi-globe me-1"></i> Personal Website</a>
+                    {% endif %}
+                    {% if researcher.orcid %}
+                    <a href="https://orcid.org/{{ researcher.orcid }}" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-person-badge me-1"></i> ORCID</a>
+                    {% endif %}
+                    {% if researcher.arxiv_id %}
+                    <a href="https://arxiv.org/a/{{ researcher.arxiv_id }}" target="_blank" class="btn btn-outline-danger btn-sm"><i class="bi bi-file-earmark-text me-1"></i> arXiv</a>
+                    {% endif %}
+                    {% if researcher.google_scholar_url %}
+                    <a href="{{ researcher.google_scholar_url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-mortarboard me-1"></i> Google Scholar</a>
+                    {% endif %}
+                    {% if not researcher.website and not researcher.orcid and not researcher.arxiv_id and not researcher.google_scholar_url %}
+                    <span class="text-muted">No links available.</span>
+                    {% endif %}
                 </div>
 
                 <h5 class="fw-bold border-bottom pb-2 mb-3">Public Emails</h5>

@@ -1,5 +1,20 @@
 {% extends 'base.html' %}
-{% block title %}Reset Password - ResearchGraph{% endblock %}
+{% block title %}Reset Password - ResearchGraph
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var resetForm = document.getElementById('resetForm');
+    if(resetForm) {
+        resetForm.addEventListener('submit', function() {
+            var btn = document.getElementById('resetBtn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
+            }
+        });
+    }
+});
+</script>
+{% endblock %}
 {% block content %}
 <style>
     .auth-wrapper {
@@ -51,7 +66,7 @@
                             <p class="text-muted small">Enter your email address and we will send you a link to reset your password.</p>
                         </div>
                         
-                        <form method="POST" action="">
+                        <form method="POST" action="" id="resetForm">
                             {{ form.hidden_tag() }}
                             <div class="mb-4">
                                 <label class="form-label text-muted small fw-bold text-uppercase"><i class="bi bi-envelope me-1"></i> {{ form.email.label.text }}</label>
@@ -59,7 +74,7 @@
                                 {% for error in form.email.errors %}<div class="text-danger small mt-1"><i class="bi bi-exclamation-circle me-1"></i>{{ error }}</div>{% endfor %}
                             </div>
                             <div class="d-grid mb-4">
-                                {{ form.submit(class="btn btn-warning btn-lg fw-bold text-dark") }}
+                                <button type="submit" class="btn btn-warning btn-lg fw-bold text-dark" id="resetBtn">{{ form.submit.label.text }}</button>
                             </div>
                         </form>
                         
@@ -72,4 +87,19 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var resetForm = document.getElementById('resetForm');
+    if(resetForm) {
+        resetForm.addEventListener('submit', function() {
+            var btn = document.getElementById('resetBtn');
+            if(btn) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Sending...';
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

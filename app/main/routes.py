@@ -3,8 +3,12 @@ from . import main_bp
 from .forms import SearchForm
 from app.models import Researcher, ResearcherEmail
 
+from flask_login import current_user
+
 @main_bp.route('/')
 def index():
+    if current_user.is_authenticated:
+        return redirect(url_for('network.dashboard') if current_user.researcher_id else url_for('main.welcome'))
     form = SearchForm()
     return render_template('index.html', form=form)
 
@@ -51,16 +55,10 @@ def team():
     admins = admin_role.users if admin_role else []
     moderators = moderator_role.users if moderator_role else []
     
-    # Filter duplicates in case someone has multiple roles
-    superadmin_ids = [u.id for u in superadmins]
-    filtered_admins = [u for u in admins if u.id not in superadmin_ids]
-    admin_ids = [u.id for u in admins]
-    filtered_moderators = [u for u in moderators if u.id not in superadmin_ids and u.id not in admin_ids]
-    
     return render_template('team.html', 
                            superadmins=superadmins, 
-                           admins=filtered_admins, 
-                           moderators=filtered_moderators)
+                           admins=admins, 
+                           moderators=moderators)
 
 @main_bp.route('/global-network')
 def global_network():

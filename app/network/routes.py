@@ -142,3 +142,66 @@ def remove_edge(collab_id):
     db.session.commit()
     flash("Collaboration successfully removed from the global graph.", "success")
     return redirect(url_for('network.dashboard'))
+
+from app.network.forms import EditMyProfileForm
+
+@network_bp.route('/edit-profile', methods=['GET', 'POST'])
+@login_required
+def edit_my_profile():
+    if not current_user.researcher_id:
+        flash("You must claim a profile before editing it.", "warning")
+        return redirect(url_for('main.index'))
+        
+    researcher = Researcher.query.get_or_404(current_user.researcher_id)
+    form = EditMyProfileForm(obj=researcher)
+    
+    if form.validate_on_submit():
+        form.populate_obj(researcher)
+        if researcher.website and not researcher.website.startswith('http'):
+            researcher.website = 'https://' + researcher.website
+        if researcher.google_scholar_url and not researcher.google_scholar_url.startswith('http'):
+            researcher.google_scholar_url = 'https://' + researcher.google_scholar_url
+        db.session.commit()
+        flash("Your profile has been updated successfully.", "success")
+        return redirect(url_for('main.view_profile', slug=researcher.slug))
+    elif request.method == 'POST':
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f"{getattr(form, field).label.text}: {error}", "danger")
+        
+    return render_template('network/edit_profile.html', form=form, researcher=researcher)
+
+@network_bp.route('/edit-edge-status/<string:collab_id>', methods=['POST'])
+@login_required
+def edit_edge_status(collab_id):
+    if not current_user.researcher_id:
+        return redirect(url_for('main.index'))
+    
+    collab = Collaboration.query.get_or_404(collab_id)
+    
+    # Verify the user is part of this collaboration
+    if collab.researcher_a_id != current_user.researcher_id and collab.researcher_b_id != current_user.researcher_id:
+        flash("You are not authorized to edit this collaboration.", "danger")
+        return redirect(url_for('network.dashboard'))
+        
+    new_status = request.form.get('status')
+    if new_status in ['ESTABLISHED', 'ONGOING']:
+        old_status_name = collab.status.name
+        collab.status = CollaborationStatus[new_status]
+        collab.updated_by_id = current_user.id
+        
+        audit = AuditLog(
+            user_id=current_user.id,
+            action="UPDATE_COLLABORATION_STATUS",
+            object_type="collaboration",
+            object_id=collab.id,
+            old_value=old_status_name,
+            new_value=new_status
+        )
+        db.session.add(audit)
+        db.session.commit()
+        flash("Collaboration status updated successfully.", "success")
+    else:
+        flash("Invalid status value.", "danger")
+        
+    return redirect(url_for('network.dashboard'))

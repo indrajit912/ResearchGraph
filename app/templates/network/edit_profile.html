@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile - ResearchGraph{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="bi bi-pencil-square me-2"></i>Edit My Profile</h4>
+                    <span class="badge bg-light text-primary">{{ researcher.display_name }}</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle-fill me-2"></i>
+                        Note: Core identity fields (Name, Slug, Primary Email) are locked to maintain network integrity. If you need to change those, please use the <strong>Suggest Correction</strong> feature on your dashboard.
+                    </div>
+                    
+                    <form method="POST">
+                        {{ form.csrf_token }}
+                        
+                        <h5 class="text-secondary border-bottom pb-2 mb-3 mt-4">Academic Details</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.affiliation.label.text }}</label>
+                                {{ form.affiliation(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.department.label.text }}</label>
+                                {{ form.department(class="form-control") }}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">{{ form.research_interests.label.text }}</label>
+                            {{ form.research_interests(class="form-control", rows="3", placeholder="e.g. Topology, Complex Analysis, Applied Mathematics") }}
+                            <small class="text-muted d-block mt-1"><i class="bi bi-info-circle me-1"></i>You can use LaTeX syntax for math symbols (e.g. <code>$C^*$</code>).</small>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.phd_institute.label.text }}</label>
+                                {{ form.phd_institute(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.phd_year.label.text }}</label>
+                                {{ form.phd_year(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <h5 class="text-secondary border-bottom pb-2 mb-3 mt-4">Location</h5>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label fw-bold">{{ form.address.label.text }}</label>
+                                {{ form.address(class="form-control") }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">{{ form.city.label.text }}</label>
+                                {{ form.city(class="form-control") }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">{{ form.state.label.text }}</label>
+                                {{ form.state(class="form-control") }}
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label fw-bold">{{ form.country.label.text }}</label>
+                                {{ form.country(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <h5 class="text-secondary border-bottom pb-2 mb-3 mt-4">Links & Identifiers</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.website.label.text }}</label>
+                                {{ form.website(class="form-control") }}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.orcid.label.text }}</label>
+                                {{ form.orcid(class="form-control", placeholder="0000-0000-0000-0000") }}
+                                <small class="text-muted d-block mt-1">Paste ONLY the ID, do not include https://orcid.org/</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.arxiv_id.label.text }}</label>
+                                {{ form.arxiv_id(class="form-control", placeholder="e.g. smith_j_1") }}
+                                <small class="text-muted d-block mt-1">Paste ONLY the Author ID, do not include https://arxiv.org/a/</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label fw-bold">{{ form.google_scholar_url.label.text }}</label>
+                                {{ form.google_scholar_url(class="form-control") }}
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-end mt-4">
+                            <a href="{{ url_for('main.view_profile', slug=researcher.slug) }}" class="btn btn-outline-secondary me-2">Cancel</a>
+                            {{ form.submit(class="btn btn-primary px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
