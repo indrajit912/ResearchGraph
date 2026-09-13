@@ -470,3 +470,47 @@ def process_edge_creation(uuid_a, uuid_b, status):
     flash("Edge successfully created!", "success")
     return redirect(url_for('admin.create_edge'))
 
+
+import os
+from flask import send_file, current_app
+from werkzeug.utils import secure_filename
+
+@admin_bp.route('/database/backup')
+@login_required
+@requires_role('SUPERADMIN')
+def backup_database():
+    db_path = os.path.join(current_app.instance_path, 'researchgraph.db')
+    if os.path.exists(db_path):
+        return send_file(db_path, as_attachment=True, download_name='researchgraph_backup.db')
+    else:
+        flash("Database file not found.", "danger")
+        return redirect(url_for('admin.dashboard'))
+
+@admin_bp.route('/database/restore', methods=['POST'])
+@login_required
+@requires_role('SUPERADMIN')
+def restore_database():
+    if 'db_file' not in request.files:
+        flash("No file provided.", "danger")
+        return redirect(url_for('admin.dashboard'))
+        
+    file = request.files['db_file']
+    if file.filename == '':
+        flash("No file selected.", "danger")
+        return redirect(url_for('admin.dashboard'))
+        
+    if not file.filename.endswith('.db'):
+        flash("Invalid file format. Please upload a .db file.", "danger")
+        return redirect(url_for('admin.dashboard'))
+        
+    try:
+        # Close all active DB connections before replacing
+        db.engine.dispose()
+        
+        db_path = os.path.join(current_app.instance_path, 'researchgraph.db')
+        file.save(db_path)
+        flash("Database successfully restored from backup!", "success")
+    except Exception as e:
+        flash(f"Error restoring database: {str(e)}", "danger")
+        
+    return redirect(url_for('admin.dashboard'))
