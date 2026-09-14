@@ -71,7 +71,13 @@
                     {% if researcher.google_scholar_url %}
                     <a href="{{ researcher.google_scholar_url }}" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-mortarboard me-1"></i> Google Scholar</a>
                     {% endif %}
-                    {% if not researcher.website and not researcher.orcid and not researcher.arxiv_id and not researcher.google_scholar_url %}
+                    {% if researcher.mathscinet_id %}
+                    <a href="https://mathscinet.ams.org/mathscinet/MRAuthorID/{{ researcher.mathscinet_id }}" target="_blank" class="btn btn-outline-secondary btn-sm"><i class="bi bi-hash me-1"></i> MathSciNet</a>
+                    {% endif %}
+                    {% if researcher.math_genealogy_url %}
+                    <a href="{{ researcher.math_genealogy_url }}" target="_blank" class="btn btn-outline-dark btn-sm"><i class="bi bi-diagram-2 me-1"></i> Math Genealogy</a>
+                    {% endif %}
+                    {% if not researcher.website and not researcher.orcid and not researcher.arxiv_id and not researcher.google_scholar_url and not researcher.mathscinet_id and not researcher.math_genealogy_url %}
                     <span class="text-muted">No links available.</span>
                     {% endif %}
                 </div>

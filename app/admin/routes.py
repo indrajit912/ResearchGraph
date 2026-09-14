@@ -71,6 +71,8 @@ def create_researcher():
             orcid=form.orcid.data,
             arxiv_id=form.arxiv_id.data,
             google_scholar_url=form.google_scholar_url.data,
+            mathscinet_id=form.mathscinet_id.data,
+            math_genealogy_url=form.math_genealogy_url.data,
             is_active=form.is_active.data
         )
         db.session.add(researcher)

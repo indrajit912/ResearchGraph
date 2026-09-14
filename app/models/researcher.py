@@ -51,6 +51,8 @@ class Researcher(db.Model):
     orcid = db.Column(db.String(50), nullable=True)
     arxiv_id = db.Column(db.String(50), nullable=True)
     google_scholar_url = db.Column(db.String(255), nullable=True)
+    mathscinet_id = db.Column(db.String(50), nullable=True)
+    math_genealogy_url = db.Column(db.String(255), nullable=True)
     
     is_active = db.Column(db.Boolean, default=True)
     

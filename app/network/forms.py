@@ -52,5 +52,7 @@ class EditMyProfileForm(FlaskForm):
     orcid = StringField('ORCID ID (e.g. 0000-0001-2345-6789)', validators=[Optional(), Length(max=50), no_url_validator('Please paste only the ORCID ID, not the full URL.')])
     arxiv_id = StringField('arXiv Author ID (e.g. smith_j_1)', validators=[Optional(), Length(max=50), no_url_validator('Please paste only the arXiv Author ID, not the full URL.')])
     google_scholar_url = StringField('Google Scholar URL', validators=[Optional(), Length(max=255)])
+    mathscinet_id = StringField('MathSciNet ID (e.g. 123456)', validators=[Optional(), Length(max=50), no_url_validator('Please paste only the MathSciNet ID, not the full URL.')])
+    math_genealogy_url = StringField('Mathematics Genealogy URL', validators=[Optional(), Length(max=255)])
     
     submit = SubmitField('Save Profile')

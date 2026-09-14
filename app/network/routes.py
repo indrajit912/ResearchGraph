@@ -161,6 +161,8 @@ def edit_my_profile():
             researcher.website = 'https://' + researcher.website
         if researcher.google_scholar_url and not researcher.google_scholar_url.startswith('http'):
             researcher.google_scholar_url = 'https://' + researcher.google_scholar_url
+        if researcher.math_genealogy_url and not researcher.math_genealogy_url.startswith('http'):
+            researcher.math_genealogy_url = 'https://' + researcher.math_genealogy_url
         db.session.commit()
         flash("Your profile has been updated successfully.", "success")
         return redirect(url_for('main.view_profile', slug=researcher.slug))

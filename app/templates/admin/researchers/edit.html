@@ -84,6 +84,15 @@
                     <label class="form-label text-muted small fw-bold text-uppercase">{{ form.google_scholar_url.label.text }}</label>
                     {{ form.google_scholar_url(class="form-control bg-light") }}
                 </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.mathscinet_id.label.text }}</label>
+                    {{ form.mathscinet_id(class="form-control bg-light") }}
+                    <small class="text-danger d-block mt-1">Paste ONLY the ID, not the full URL.</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label text-muted small fw-bold text-uppercase">{{ form.math_genealogy_url.label.text }}</label>
+                    {{ form.math_genealogy_url(class="form-control bg-light") }}
+                </div>
             </div>
 
             <h5 class="fw-bold text-primary mb-3 border-top pt-3">Location Details (Optional)</h5>
