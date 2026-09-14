@@ -139,27 +139,41 @@ def edit_researcher(uuid):
             display_name = f"{researcher.first_name} {researcher.middle_name} {researcher.last_name}"
         researcher.display_name = display_name
         
-        # Handle new emails
+        # Handle emails
+        from app.models import ResearcherEmail
+        email_list = []
         if form.emails.data:
-            from app.models import ResearcherEmail
             email_list = [e.strip().lower() for e in form.emails.data.split(',') if e.strip()]
             
-            # Check for existing emails belonging to OTHER researchers
-            for email_addr in email_list:
-                existing = ResearcherEmail.query.filter_by(email=email_addr).first()
-                if existing and existing.researcher_id != researcher.uuid:
-                    db.session.rollback()
-                    flash(f'Error: The email {email_addr} is already associated with another researcher "{existing.researcher.display_name}".', 'danger')
-                    return render_template('admin/researchers/edit.html', form=form, researcher=researcher)
-                    
-            for idx, email_addr in enumerate(email_list):
-                if not ResearcherEmail.query.filter_by(email=email_addr, researcher_id=researcher.uuid).first():
-                    email_record = ResearcherEmail(
-                        researcher_id=researcher.uuid,
-                        email=email_addr,
-                        is_primary=(idx == 0)
-                    )
-                    db.session.add(email_record)
+        # Check for existing emails belonging to OTHER researchers
+        for email_addr in email_list:
+            existing = ResearcherEmail.query.filter_by(email=email_addr).first()
+            if existing and existing.researcher_id != researcher.uuid:
+                db.session.rollback()
+                flash(f'Error: The email {email_addr} is already associated with another researcher "{existing.researcher.display_name}".', 'danger')
+                return render_template('admin/researchers/edit.html', form=form, researcher=researcher)
+                
+        # Sync emails
+        current_emails = ResearcherEmail.query.filter_by(researcher_id=researcher.uuid).all()
+        current_email_dict = {e.email: e for e in current_emails}
+        
+        # Remove emails not in the new list
+        for email_addr, e_record in current_email_dict.items():
+            if email_addr not in email_list:
+                db.session.delete(e_record)
+                
+        # Update or add emails
+        for idx, email_addr in enumerate(email_list):
+            is_primary = (idx == 0)
+            if email_addr in current_email_dict:
+                current_email_dict[email_addr].is_primary = is_primary
+            else:
+                email_record = ResearcherEmail(
+                    researcher_id=researcher.uuid,
+                    email=email_addr,
+                    is_primary=is_primary
+                )
+                db.session.add(email_record)
                     
         db.session.commit()
         flash('Researcher updated successfully.', 'success')
