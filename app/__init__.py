@@ -35,8 +35,10 @@ def create_app(config_name='default'):
     from app.network import network_bp
     app.register_blueprint(network_bp)
     
-    from app.api import api_bp
+    from app.api import api_bp, admin_api_bp
     app.register_blueprint(api_bp)
+    app.register_blueprint(admin_api_bp, url_prefix='/api/v1/admin')
+    csrf.exempt(admin_api_bp)
 
     # Setup login manager
     login_manager.login_view = 'auth.login'

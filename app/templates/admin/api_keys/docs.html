@@ -1,0 +1,164 @@
+{% extends 'admin/base.html' %}
+{% block admin_content %}
+<div class="mb-4">
+    <a href="{{ url_for('admin.manage_api_keys') }}" class="btn btn-sm btn-outline-secondary"><i class="bi bi-arrow-left"></i> Back to API Keys</a>
+</div>
+
+<h2>Superadmin REST API Documentation</h2>
+<p class="text-muted">Version: v1</p>
+
+<div class="card shadow-sm border-0 mt-4 mb-5">
+    <div class="card-header bg-dark text-white fw-bold">Authentication</div>
+    <div class="card-body">
+        <p>All API requests must be authenticated using an API key passed in the <code>Authorization</code> HTTP header as a Bearer token.</p>
+        <pre class="bg-light p-3 rounded"><code>Authorization: Bearer rg_abcdefgh_your32charsecret</code></pre>
+        <p class="text-muted small">Note: Your API key will only work if you currently have the <code>SUPERADMIN</code> role.</p>
+    </div>
+</div>
+
+<h4 class="mb-3">Endpoints</h4>
+
+<div class="accordion shadow-sm mb-5" id="apiDocs">
+    
+    <!-- GET /network -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-network">
+                <span class="badge bg-primary me-2">GET</span> /api/v1/admin/network
+            </button>
+        </h2>
+        <div id="ep-network" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Retrieves the complete public research-network graph of all active researchers.</p>
+                <h5>Response</h5>
+                <pre class="bg-light p-3 rounded text-dark"><code>{
+  "data": {
+    "nodes": [ { "id": "...", "display_name": "..." } ],
+    "links": [ { "source": "...", "target": "...", "status": "ESTABLISHED" } ]
+  },
+  "meta": {
+    "total_nodes": 150,
+    "total_links": 300
+  }
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- GET /researchers -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-list-researchers">
+                <span class="badge bg-primary me-2">GET</span> /api/v1/admin/researchers
+            </button>
+        </h2>
+        <div id="ep-list-researchers" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>List researchers with pagination and optional search.</p>
+                <h5>Query Parameters</h5>
+                <ul>
+                    <li><code>q</code> (string): Search term</li>
+                    <li><code>page</code> (int): Page number (default: 1)</li>
+                    <li><code>page_size</code> (int): Results per page (default: 20, max: 100)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- GET /researchers/<slug> -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-get-researcher">
+                <span class="badge bg-primary me-2">GET</span> /api/v1/admin/researchers/&lt;slug&gt;
+            </button>
+        </h2>
+        <div id="ep-get-researcher" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Retrieves the profile of a single researcher by their slug.</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- GET /researchers/<slug>/network -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-ind-network">
+                <span class="badge bg-primary me-2">GET</span> /api/v1/admin/researchers/&lt;slug&gt;/network
+            </button>
+        </h2>
+        <div id="ep-ind-network" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Retrieves the local research network (collaborators) for a single researcher.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- PATCH /researchers/<slug> -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-patch-researcher">
+                <span class="badge bg-warning text-dark me-2">PATCH</span> /api/v1/admin/researchers/&lt;slug&gt;
+            </button>
+        </h2>
+        <div id="ep-patch-researcher" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Updates a researcher's basic profile information.</p>
+                <h5>Request Body (JSON)</h5>
+                <p>Send a partial JSON object with the fields you wish to update.</p>
+                <pre class="bg-light p-3 rounded"><code>{
+  "department": "Computer Science",
+  "is_active": true
+}</code></pre>
+            </div>
+        </div>
+    </div>
+
+    <!-- DELETE /researchers/<slug> -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-del-researcher">
+                <span class="badge bg-danger me-2">DELETE</span> /api/v1/admin/researchers/&lt;slug&gt;
+            </button>
+        </h2>
+        <div id="ep-del-researcher" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Deletes a researcher and cleans up associated reports and edges to prevent graph orphans. Returns <code>204 No Content</code> on success.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST /backup -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-backup">
+                <span class="badge bg-success me-2">POST</span> /api/v1/admin/backup
+            </button>
+        </h2>
+        <div id="ep-backup" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Triggers a secure, programmatic physical database backup. The response body is the raw binary stream of the SQLite <code>.db</code> file.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- POST /restore -->
+    <div class="accordion-item">
+        <h2 class="accordion-header">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#ep-restore">
+                <span class="badge bg-danger me-2">POST</span> /api/v1/admin/restore
+            </button>
+        </h2>
+        <div id="ep-restore" class="accordion-collapse collapse" data-bs-parent="#apiDocs">
+            <div class="accordion-body">
+                <p>Performs a highly destructive, instant programmatic overwrite of the production database.</p>
+                <h5>Safety Headers</h5>
+                <p>You MUST include the HTTP header <code>X-Confirm-Restore: true</code>. Without this, the request is immediately rejected.</p>
+                <h5>Request Format</h5>
+                <p>Must be <code>multipart/form-data</code> with the file attached under the key <code>db_file</code>.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

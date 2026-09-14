@@ -4,6 +4,7 @@ from .researcher import Researcher, ResearcherEmail
 from .collaboration import Collaboration, CollaborationStatus
 from .report import CollaborationReport, ResearcherCorrectionReport, ReportStatus
 from .audit import AuditLog
+from .api_key import APIKey
 
 __all__ = [
     'Role',
@@ -16,5 +17,6 @@ __all__ = [
     'CollaborationReport',
     'ResearcherCorrectionReport',
     'ReportStatus',
-    'AuditLog'
+    'AuditLog',
+    'APIKey'
 ]

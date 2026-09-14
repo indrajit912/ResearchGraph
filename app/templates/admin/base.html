@@ -19,6 +19,10 @@
             <a href="{{ url_for('admin.list_users') }}" class="list-group-item list-group-item-action"><i class="bi bi-person-badge me-2"></i> Users & Roles</a>
             <a href="{{ url_for('admin.audit_logs') }}" class="list-group-item list-group-item-action"><i class="bi bi-journal-text me-2"></i> Audit Logs</a>
             {% endif %}
+            
+            {% if current_user.has_role('SUPERADMIN') %}
+            <a href="{{ url_for('admin.manage_api_keys') }}" class="list-group-item list-group-item-action"><i class="bi bi-key me-2"></i> API Keys & Access</a>
+            {% endif %}
         </div>
     </div>
     <div class="col-md-9">

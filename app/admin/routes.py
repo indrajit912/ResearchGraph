@@ -73,6 +73,7 @@ def create_researcher():
             google_scholar_url=form.google_scholar_url.data,
             mathscinet_id=form.mathscinet_id.data,
             math_genealogy_url=form.math_genealogy_url.data,
+            research_interests=form.research_interests.data,
             is_active=form.is_active.data
         )
         db.session.add(researcher)
